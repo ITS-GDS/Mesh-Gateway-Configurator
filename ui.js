@@ -126,11 +126,10 @@ function openQrScanner(target) {
   contrastVal.textContent = qrAdjust.contrast + '%';
   brightnessVal.textContent = qrAdjust.brightness + '%';
   invertEl.checked = qrAdjust.invert;
-  // Applicato sia al canvas invisibile (quello che legge jsQR) sia al
-  // <video> a schermo: prima solo il canvas veniva filtrato, quindi
-  // muovere gli slider non produceva alcun cambiamento visibile - vedi
-  // conversazione. Il negativo (invert) aiuta sia a occhio con QR poco
-  // leggibili sia jsQR con QR a colori invertiti (es. generati in dark
+  // Applicato sia al canvas invisibile (quello che legge jsQR) sia al <video> a
+  // schermo: prima solo il canvas veniva filtrato, quindi muovere gli slider non
+  // produceva alcun cambiamento visibile. Il negativo (invert) aiuta sia a occhio
+  // con QR poco leggibili sia jsQR con QR a colori invertiti (es. generati in dark
   // mode, moduli bianchi su fondo nero).
   const applyAdjust = () => {
     const f = `contrast(${qrAdjust.contrast}%) brightness(${qrAdjust.brightness}%)${qrAdjust.invert ? ' invert(1)' : ''}`;
@@ -157,8 +156,8 @@ function openQrScanner(target) {
     stopped = true;
     if (rafId) cancelAnimationFrame(rafId);
     if (stream) stream.getTracks().forEach(t => t.stop());
-    // Esce con la stessa "grazia" con cui e' entrato (fade+scorrimento verso
-    // il basso), invece di sparire di scatto - vedi conversazione.
+    // Esce con la stessa "grazia" con cui e' entrato (fade+scorrimento verso il
+    // basso), invece di sparire di scatto.
     overlay.classList.add('qr-modal-closing');
     overlay.querySelector('.qr-modal-box').addEventListener('animationend', () => overlay.remove(), { once: true });
   };
@@ -178,11 +177,10 @@ function openQrScanner(target) {
 
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
-  // Boost contrasto/luminosita' sul frame usato per la decodifica (non sul
-  // video mostrato all'utente): un QR piccolo o generato a bassa risoluzione
-  // ha bordi dei moduli meno netti, aumentare il contrasto aiuta jsQR a
-  // distinguerli. Regolabile a mano dagli slider sopra invece di un valore
-  // fisso - vedi conversazione.
+  // Boost contrasto/luminosita' sul frame usato per la decodifica (non sul video
+  // mostrato all'utente): un QR piccolo o generato a bassa risoluzione ha bordi dei
+  // moduli meno netti, aumentare il contrasto aiuta jsQR a distinguerli. Regolabile
+  // a mano dagli slider sopra invece di un valore fisso.
   applyAdjust();
 
   // Avvia (o riavvia su cambio fotocamera) lo stream video. Al primo giro
@@ -191,10 +189,10 @@ function openQrScanner(target) {
   // scelto dal pulsante switch.
   function startStream(deviceId) {
     if (stream) stream.getTracks().forEach(t => t.stop());
-    // Risoluzione "ideal" alta: il browser sceglie comunque il massimo
-    // supportato dalla fotocamera se e' inferiore, ma di default (senza
-    // chiederla) molte webcam partono in un modo basso/720p che rende un
-    // QR piccolo poco piu' di una macchia di pixel - vedi conversazione.
+    // Risoluzione "ideal" alta: il browser sceglie comunque il massimo supportato
+    // dalla fotocamera se e' inferiore, ma di default (senza chiederla) molte
+    // webcam partono in un modo basso/720p che rende un QR piccolo poco piu' di una
+    // macchia di pixel.
     const videoConstraints = deviceId
       ? { deviceId: { exact: deviceId }, width: { ideal: 1920 }, height: { ideal: 1080 } }
       : { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } };
@@ -300,10 +298,10 @@ function openQrScanner(target) {
             try { done = target.onCode(code.data, scanUi); } catch (e) { console.error(e); }
             if (done) { cleanup(); return; }
           } else if (code && code.data) {
-            // Rilettura per id, non riferimento catturato all'apertura: un
-            // refresh periodico nel frattempo puo' aver ridisegnato
-            // nodes-box e reso l'elemento vecchio "orfano" - scrivendoci
-            // sopra il valore sparirebbe in silenzio - vedi conversazione.
+            // Rilettura per id, non riferimento catturato all'apertura: un refresh
+            // periodico nel frattempo puo' aver ridisegnato nodes-box e reso
+            // l'elemento vecchio "orfano" - scrivendoci sopra il valore sparirebbe
+            // in silenzio.
             const liveInput = document.getElementById(targetInputId);
             if (liveInput) {
               liveInput.value = code.data;
@@ -321,13 +319,12 @@ function openQrScanner(target) {
     .catch(() => { status.textContent = 'Fotocamera non disponibile o permesso negato.'; });
 }
 
-// rawLux live per nodo (aggiornato dai push SENSOR) - solo per mostrare la
-// lettura più fresca nella card "Luce ambiente" tra un poll e l'altro. La
-// calibrazione lux NON usa più questo valore: scrive il riferimento
-// direttamente nel sensore (CFG:SETLUXCALIB;lux_x100=..., vedi
-// mesh_handler_node_set_luxcalib) invece di calcolare un fattore locale
-// raw/riferimento come faceva la vecchia calibrazione "cosmetica" - vedi
-// conversazione ("manca ancora la calibrazione lux come avviene in app").
+// rawLux live per nodo (aggiornato dai push SENSOR) - solo per mostrare la lettura
+// più fresca nella card "Luce ambiente" tra un poll e l'altro. La calibrazione lux
+// NON usa più questo valore: scrive il riferimento direttamente nel sensore
+// (CFG:SETLUXCALIB;lux_x100=..., vedi mesh_handler_node_set_luxcalib) invece di
+// calcolare un fattore locale raw/riferimento come faceva la vecchia calibrazione
+// "cosmetica".
 let luxRawLive = {}; // { nodeI: float }
 
 // Usato da app.js per rallentare il polling durante il provisioning.
@@ -346,37 +343,34 @@ let pinnedMac = null;
 let everChanged = {}; // key mac|TYPE|id|offset -> true una volta cambiato, resta evidenziato
 let prevHex = {};     // key mac|TYPE|id -> ultimo hex visto, per il confronto
 // Mac gia' visti almeno una volta: la card riceve l'animazione di comparsa
-// (fadeInUp) solo la prima volta che appare, non ad ogni refresh successivo
-// della lista - vedi conversazione ("migliora il pannello sniffing").
+// (fadeInUp) solo la prima volta che appare, non ad ogni refresh successivo della
+// lista.
 let seenSniffMacs = new Set();
 
-// --- Import di una rete mesh già provisionata da un file esterno (es.
-// export dell'app Android in formato CDB standard - vedi conversazione:
-// "meshprov_GDS_1.json"). Tutto il parsing/riduzione avviene qui in JS: il
-// gateway non sa nulla di JSON, riceve solo CFG:IMPORTNET/IMPORTNODE/
+// --- Import di una rete mesh già provisionata da un file esterno (es. export
+// dell'app Android in formato CDB standard. Tutto il parsing/riduzione avviene qui
+// in JS: il gateway non sa nulla di JSON, riceve solo CFG:IMPORTNET/IMPORTNODE/
 // IMPORTEND già "distillati" ai soli modelli Generic OnOff/Level/Sensor
-// (0x1000/0x1002/0x1100) - qualunque modello vendor proprietario del file
-// viene ignorato, coerente con quanto gestisce oggi il resto della PWA.
+// (0x1000/0x1002/0x1100) - qualunque modello vendor proprietario del file viene
+// ignorato, coerente con quanto gestisce oggi il resto della PWA.
 const IMPORT_MODEL_ONOFF = '1000';
 const IMPORT_MODEL_LEVEL = '1002';
 const IMPORT_MODEL_SENSOR = '1100';
-// Light CTL Server (temperatura colore, es. SR Dongle) - mancava del tutto
-// nella riduzione dell'import: un nodo con questo modello veniva importato
-// come lampada onoff/level normale, ma senza ctl_offsets/ctl_count lato
-// firmware nessun poll periodico leggeva mai lo stato colore (vedi
-// mesh_poll_thread_fn) e la card non mostrava mai lo slider colore dopo un
-// import da file, a differenza di un nodo provisionato dal vivo (Composition
-// Data Get, che lo scopre da solo). Vedi conversazione ("sr dongle non ha
-// la barra del colore").
+// Light CTL Server (temperatura colore, es. SR Dongle) - mancava del tutto nella
+// riduzione dell'import: un nodo con questo modello veniva importato come lampada
+// onoff/level normale, ma senza ctl_offsets/ctl_count lato firmware nessun poll
+// periodico leggeva mai lo stato colore (vedi mesh_poll_thread_fn) e la card non
+// mostrava mai lo slider colore dopo un import da file, a differenza di un nodo
+// provisionato dal vivo (Composition Data Get, che lo scopre da solo).
 const IMPORT_MODEL_CTL = '1303';
 const IMPORT_MAX_ELEM_OFFSETS = 4; // NODE_META_MAX_ELEM lato firmware
 
-// CFG:IMPORTEND può metterci fino a decine di secondi (vedi timeout dedicato
-// in app.js) - senza questa guardia un secondo click sul pulsante mentre il
-// primo import sta ancora finalizzando (la UI sembra ferma, tentazione
-// comprensibile) accodava un secondo giro IMPORTNET/IMPORTNODE/IMPORTEND
-// completo, che il firmware processa comunque uno alla volta ma confondeva
-// il client con risposte in arrivo fuori ordine - vedi conversazione.
+// CFG:IMPORTEND può metterci fino a decine di secondi (vedi timeout dedicato in
+// app.js) - senza questa guardia un secondo click sul pulsante mentre il primo
+// import sta ancora finalizzando (la UI sembra ferma, tentazione comprensibile)
+// accodava un secondo giro IMPORTNET/IMPORTNODE/IMPORTEND completo, che il firmware
+// processa comunque uno alla volta ma confondeva il client con risposte in arrivo
+// fuori ordine.
 let importInProgress = false;
 
 async function importMeshFromFile(file) {
@@ -526,31 +520,28 @@ async function importMeshFromText(text, sourceLabel) {
         const isRelevant = id === IMPORT_MODEL_ONOFF || id === IMPORT_MODEL_LEVEL
           || id === IMPORT_MODEL_SENSOR || id === IMPORT_MODEL_CTL;
         if (!isRelevant) continue;
-        // "bind" vuoto significa che il modello NON ha mai ricevuto un
-        // Config Model App Bind sul dispositivo reale (visto nel file: uno
-        // stesso nodo puo' avere il modello OnOff Server su piu' elementi,
-        // ma solo alcuni bindati/sottoscritti - gli altri sono output
-        // inutilizzati/di scorta). Un comando verso un modello non bindato
-        // fallisce sempre sul device reale: includerlo comunque produceva
-        // offset "morti" nella lista, spesso proprio il primo (elemento 0),
-        // dando l'impressione che l'intero nodo non rispondesse mai. Vedi
-        // conversazione ("ancora nessun dato").
+        // "bind" vuoto significa che il modello NON ha mai ricevuto un Config Model
+        // App Bind sul dispositivo reale (visto nel file: uno stesso nodo puo'
+        // avere il modello OnOff Server su piu' elementi, ma solo alcuni
+        // bindati/sottoscritti - gli altri sono output inutilizzati/di scorta). Un
+        // comando verso un modello non bindato fallisce sempre sul device reale:
+        // includerlo comunque produceva offset "morti" nella lista, spesso proprio
+        // il primo (elemento 0), dando l'impressione che l'intero nodo non
+        // rispondesse mai.
         if (!Array.isArray(mod.bind) || !mod.bind.length) continue;
         if (id === IMPORT_MODEL_ONOFF && onoff.length < IMPORT_MAX_ELEM_OFFSETS) onoff.push(idx);
         else if (id === IMPORT_MODEL_LEVEL && level.length < IMPORT_MAX_ELEM_OFFSETS) level.push(idx);
         else if (id === IMPORT_MODEL_SENSOR && sensor.length < IMPORT_MAX_ELEM_OFFSETS) sensor.push(idx);
         else if (id === IMPORT_MODEL_CTL && ctl.length < IMPORT_MAX_ELEM_OFFSETS) ctl.push(idx);
-        // Tutti i modelli di uno stesso nodo condividono di norma lo stesso
-        // gruppo (vedi il file: onoff/level/sensor di un nodo sottoscritti
-        // tutti a "C000" oppure tutti a "C001") - basta il primo trovato.
-        // Il Sensor Server pero' non si iscrive mai a un gruppo (non riceve
-        // comandi): il suo appartenere al gruppo si esprime nel file con
-        // "publish.address" (pubblica li' le letture), MAI in "subscribe"
-        // (sempre vuoto/assente per quel modello). Senza questo fallback un
-        // nodo con solo Sensor Server (0x1100) restava sempre senza gruppo
-        // anche quando nel file era chiaramente assegnato a uno - vedi
-        // conversazione: "i sensori ancora non vengono messi nel gruppo
-        // corretto"/"anche nella pwa non vengono dichiarati di nessun gruppo".
+        // Tutti i modelli di uno stesso nodo condividono di norma lo stesso gruppo
+        // (vedi il file: onoff/level/sensor di un nodo sottoscritti tutti a "C000"
+        // oppure tutti a "C001") - basta il primo trovato. Il Sensor Server pero'
+        // non si iscrive mai a un gruppo (non riceve comandi): il suo appartenere
+        // al gruppo si esprime nel file con "publish.address" (pubblica li' le
+        // letture), MAI in "subscribe" (sempre vuoto/assente per quel modello).
+        // Senza questo fallback un nodo con solo Sensor Server (0x1100) restava
+        // sempre senza gruppo anche quando nel file era chiaramente assegnato a
+        // uno.
         if (!group && Array.isArray(mod.subscribe) && mod.subscribe.length) {
           group = mod.subscribe[0];
         } else if (!group && mod.publish && mod.publish.address) {
@@ -574,12 +565,12 @@ async function importMeshFromText(text, sourceLabel) {
   // filtro - a differenza dei nodi non c'è nulla da classificare qui.
   const groups = Array.isArray(data.groups) ? data.groups : [];
 
-  // Righe inviate una alla volta con sendCmdAwait (attende OK/ERR/timeout)
-  // e fino a 2 ritentativi se una riga va persa/corrotta sul ponte USB-UART
-  // (vedi conversazione: un CFG:IMPORTNODE ogni tanto arrivava troncato o
-  // mescolato col successivo, perdendo silenziosamente un nodo). Il
-  // chunking lento di serial.js riduce il problema alla radice, ma il
-  // ritentativo qui è una rete di sicurezza a costo quasi nullo.
+  // Righe inviate una alla volta con sendCmdAwait (attende OK/ERR/timeout) e fino a
+  // 2 ritentativi se una riga va persa/corrotta sul ponte USB-UART. Un
+  // CFG:IMPORTNODE ogni tanto arrivava troncato o mescolato col successivo,
+  // perdendo silenziosamente un nodo. Il chunking lento di serial.js riduce il
+  // problema alla radice, ma il ritentativo qui è una rete di sicurezza a costo
+  // quasi nullo.
   const IMPORT_RETRIES = 2;
   async function sendImportLine(line) {
     for (let attempt = 0; attempt <= IMPORT_RETRIES; attempt++) {
@@ -594,12 +585,10 @@ async function importMeshFromText(text, sourceLabel) {
     return { ok: false, msg: 'errore sconosciuto' };
   }
 
-  // ivIndex (campo standard del CDB esportato): IV Index REALE della rete,
-  // quasi certamente diverso da 0 per una rete già viva da tempo - senza
-  // passarlo al firmware, il gateway si riprovisiona con IV Index 0 e i nodi
-  // fisici scartano ogni suo pacchetto in silenzio (mesh "muta" dopo
-  // l'import, mai nessun dato). Vedi conversazione: "sta attendendo dati...
-  // non si può accelerare?"/"una volta era velocissimo con il ble".
+  // ivIndex (campo standard del CDB esportato): IV Index REALE della rete, quasi
+  // certamente diverso da 0 per una rete già viva da tempo - senza passarlo al
+  // firmware, il gateway si riprovisiona con IV Index 0 e i nodi fisici scartano
+  // ogni suo pacchetto in silenzio (mesh "muta" dopo l'import, mai nessun dato).
   const ivIndex = Number.isInteger(data.ivIndex) ? data.ivIndex : 0;
   const ivParam = `;iv=${ivIndex.toString(16)}`;
 
@@ -630,11 +619,10 @@ async function importMeshFromText(text, sourceLabel) {
     if (!res.ok) failedGroups.push(name || g.address);
   }
 
-  // CFG:IMPORTEND fa tutto il lavoro pesante (riprovisioning + bind AppKey
-  // locale, che può ritentare più volte se il radio non si è ancora
-  // assestato subito dopo un boot/reset) - può metterci fino a decine di
-  // secondi, meglio dirlo esplicitamente invece di lasciare la UI apparente
-  // ferma. Vedi conversazione.
+  // CFG:IMPORTEND fa tutto il lavoro pesante (riprovisioning + bind AppKey locale,
+  // che può ritentare più volte se il radio non si è ancora assestato subito dopo
+  // un boot/reset) - può metterci fino a decine di secondi, meglio dirlo
+  // esplicitamente invece di lasciare la UI apparente ferma.
   setMsg('Finalizzazione import in corso (può richiedere fino a 30-40s, attendere)...');
   const endRes = await sendImportLine('CFG:IMPORTEND');
   if (!endRes.ok) {
@@ -643,10 +631,10 @@ async function importMeshFromText(text, sourceLabel) {
   }
 
   // CFG:OK;IMPORTEND;imported=X/Y (vedi cfg_importend in cfg_protocol.c): il
-  // firmware ha accettato ogni riga CFG:IMPORTNODE individualmente (OK), ma
-  // durante il commit finale uno o più nodi possono non entrare comunque nel
-  // CDB (es. CONFIG_BT_MESH_CDB_NODE_COUNT esaurito) - un fallimento
-  // invisibile a questo livello prima d'ora (vedi conversazione "wtf?").
+  // firmware ha accettato ogni riga CFG:IMPORTNODE individualmente (OK), ma durante
+  // il commit finale uno o più nodi possono non entrare comunque nel CDB (es.
+  // CONFIG_BT_MESH_CDB_NODE_COUNT esaurito) - un fallimento invisibile a questo
+  // livello prima d'ora.
   const importedMatch = /^imported=(\d+)\/(\d+)/.exec(endRes.msg || '');
 
   if (failedNodes.length || failedGroups.length) {
@@ -678,11 +666,10 @@ export function init(a) {
     api.sendCmd('CFG:MESHSAVE');
   });
   document.getElementById('btn-reset').addEventListener('click', async () => {
-    // CFG:RESETMESH (non piu' CFG:RESET, vedi conversazione: "va ad
-    // eliminare anche il nome dispositivo, i relay e i sensori classici")
-    // tocca SOLO la rete mesh - nome hub/relè/slot BLE classico restano
-    // intatti. Nessun riavvio del gateway: niente countdown di
-    // riconnessione, resta tutto sulla stessa connessione seriale/BLE.
+    // CFG:RESETMESH (non piu' CFG:RESET): tocca SOLO la rete mesh - nome
+    // hub/relè/slot BLE classico restano intatti. Nessun riavvio del gateway:
+    // niente countdown di riconnessione, resta tutto sulla stessa connessione
+    // seriale/BLE.
     if (!confirm('Svuotare la rete mesh? Nodi e gruppi mesh verranno rimossi (nome dispositivo, relè e sensori BLE classici restano invariati).')) return;
     const msgBox = document.getElementById('reset-countdown');
     if (msgBox) { msgBox.style.display = 'block'; msgBox.textContent = 'Reset rete mesh in corso...'; }
@@ -755,9 +742,8 @@ export function init(a) {
   document.getElementById('sniffsearch').addEventListener('input', () => renderSnifferList());
 
   // Chip "Solo con nome" / "Solo senza nome (solo MAC)": mutuamente esclusive
-  // (attivarne una spegne l'altra), cosi' il filtro resta sempre univoco
-  // invece di poter combaciare a un risultato vuoto - vedi conversazione
-  // ("metti delle spunte per filtrare i dispositivi ble").
+  // (attivarne una spegne l'altra), cosi' il filtro resta sempre univoco invece di
+  // poter combaciare a un risultato vuoto.
   const filterNamedEl = document.getElementById('sniff-filter-named');
   const filterUnnamedEl = document.getElementById('sniff-filter-unnamed');
   filterNamedEl.addEventListener('click', () => {
@@ -791,10 +777,9 @@ export function setConnected(connected) {
   const label = btn.querySelector('.btn-connect-label');
   const dot = document.getElementById('conn-dot');
   const newText = connected ? 'Disconnetti' : 'Connetti';
-  // Il testo scorre via e il nuovo entra dall'altro lato, invece di cambiare
-  // di scatto - stessa idea del pulsante notte/giorno ma orizzontale, dato
-  // che qui e' testo non un'icona - vedi conversazione ("un'animazione
-  // anche per il pulsante connetti/disconnetti").
+  // Il testo scorre via e il nuovo entra dall'altro lato, invece di cambiare di
+  // scatto - stessa idea del pulsante notte/giorno ma orizzontale, dato che qui e'
+  // testo non un'icona.
   if (label && label.textContent !== newText) {
     label.classList.remove('btn-label-out');
     void label.offsetWidth; // riavvia l'animazione anche se già in corso
@@ -832,10 +817,10 @@ export function setConnected(connected) {
   }
 }
 
-// Log seriale unico (stessa connessione USB) ma mostrato in due tab diversi
-// (Beacon e Dispositivo, vedi conversazione): non e' possibile spostare lo
-// stesso nodo DOM in due posti, quindi ogni riga viene clonata su tutti gli
-// elementi .log-panel presenti - restano sempre sincronizzati tra loro.
+// Log seriale unico (stessa connessione USB) ma mostrato in due tab diversi (Beacon
+// e Dispositivo,: non e' possibile spostare lo stesso nodo DOM in due posti, quindi
+// ogni riga viene clonata su tutti gli elementi .log-panel presenti - restano
+// sempre sincronizzati tra loro.
 export function log(line, kind) {
   const panels = document.querySelectorAll('.log-panel');
   if (!panels.length) return;
@@ -886,11 +871,10 @@ export function renderState(state) {
 const WRITE_BTN_IDS = ['btn-meshsave', 'btn-reset', 'btn-factory-reset', 'btn-sethubname', 'btn-resetallsensors', 'sniffbtn', 'discbtn', 'importbtn', 'importqrbtn'];
 
 function renderUsbModeBanner(usbMode) {
-  // Il pallino accanto al titolo rispecchia il colore del LED fisico
-  // sull'ESP (rgb_led_set in main.c): verde in modalita' normale, blu in
-  // modalita' USB/config (BOOT tenuto premuto) - prima era sempre verde a
-  // connessione avvenuta, senza distinguere le due modalita' - vedi
-  // conversazione.
+  // Il pallino accanto al titolo rispecchia il colore del LED fisico sull'ESP
+  // (rgb_led_set in main.c): verde in modalita' normale, blu in modalita'
+  // USB/config (BOOT tenuto premuto) - prima era sempre verde a connessione
+  // avvenuta, senza distinguere le due modalita'.
   const dot = document.getElementById('conn-dot');
   if (dot) dot.classList.toggle('usbmode', !!usbMode);
 
@@ -1013,13 +997,12 @@ function updateRebindProgress() {
     if (now > rebindResult[i].until) delete rebindResult[i];
   }
 }
-// Pannello "Impostazioni" (<details class="node-settings">) aperto da un
-// nodo: renderNodes() ricostruisce l'intero innerHTML ad ogni poll (~2s),
-// quindi un <details> senza stato tracciato a parte torna sempre chiuso al
-// giro successivo anche se l'utente lo aveva appena aperto - vedi
-// conversazione ("non sta aperto da solo"). Popolato/svuotato dal listener
-// "toggle" in wireNodeEvents, riletto qui in renderNode per rimettere
-// l'attributo "open" dove serve.
+// Pannello "Impostazioni" (<details class="node-settings">) aperto da un nodo:
+// renderNodes() ricostruisce l'intero innerHTML ad ogni poll (~2s), quindi un
+// <details> senza stato tracciato a parte torna sempre chiuso al giro successivo
+// anche se l'utente lo aveva appena aperto. Popolato/svuotato dal listener "toggle"
+// in wireNodeEvents, riletto qui in renderNode per rimettere l'attributo "open"
+// dove serve.
 let openSettingsNodes = new Set();
 
 function bumpIfChanged(el, newVal, key) {
@@ -1080,16 +1063,14 @@ function renderGroups() {
   if (divider) divider.hidden = !hasGroups;
   if (!hasGroups) { box.innerHTML = ''; return; }
 
-  // Stessa protezione anti-refresh dello slider di livello per nodo
-  // (renderNodes/id "lvl_"): senza, il poll periodico di CFG:STATE (~2s)
-  // ricostruirebbe lo slider sotto al dito/mouse durante il trascinamento.
-  // Estesa anche ai due bottoni Accendi/Spegni (niente id, solo data-act):
-  // un click e' un mousedown+mouseup ravvicinati ma non istantanei, e il
-  // poll (che gira ogni ~2s a prescindere dal click) puo' capitare esattamente
-  // in mezzo, sostituendo il bottone sotto al dito e perdendo il click prima
-  // che arrivi a buon fine - serviva piu' di un tentativo. Vedi conversazione
-  // ("provato a accendere spegnere da pulsanti di gruppo... devo fare piu' di
-  // un click").
+  // Stessa protezione anti-refresh dello slider di livello per nodo (renderNodes/id
+  // "lvl_"): senza, il poll periodico di CFG:STATE (~2s) ricostruirebbe lo slider
+  // sotto al dito/mouse durante il trascinamento. Estesa anche ai due bottoni
+  // Accendi/Spegni (niente id, solo data-act): un click e' un mousedown+mouseup
+  // ravvicinati ma non istantanei, e il poll (che gira ogni ~2s a prescindere dal
+  // click) puo' capitare esattamente in mezzo, sostituendo il bottone sotto al dito
+  // e perdendo il click prima che arrivi a buon fine - serviva piu' di un
+  // tentativo.
   const act = document.activeElement;
   if (act && box.contains(act)) {
     if (act.id && act.id.startsWith('grplvl_')) return;
@@ -1131,10 +1112,9 @@ function toggleDiscovery() {
   api.sendCmd(lastState.discActive ? 'CFG:DISCSTOP' : 'CFG:DISCSTART');
 }
 
-// Icona radar (pallino + due anelli concentrici che si espandono e sfumano
-// in loop): usata ovunque nella UI compaia "ricerca/sniffer in corso", al
-// posto di un testo statico - vedi conversazione ("un simbolo con una bella
-// animazione, fagli fare qualcosa").
+// Icona radar (pallino + due anelli concentrici che si espandono e sfumano in
+// loop): usata ovunque nella UI compaia "ricerca/sniffer in corso", al posto di un
+// testo statico.
 const RADAR_HTML = '<span class="radar-ping"><span class="radar-dot"></span><span class="radar-ring"></span><span class="radar-ring r2"></span></span>';
 
 function renderDiscButton() {
@@ -1170,11 +1150,10 @@ function renderDiscovered() {
     const locked = lastState.busy; // provisioning di un altro nodo in corso: tutta la lista in grigio, non cliccabile
     const canProv = !locked && (!d.oob || lastState.oob);
     const oobTag = d.oob ? `<span class="badge warn">OOB</span>` : `<span class="badge">No OOB</span>`;
-    // Il firmware riconosce l'UUID (fisso di fabbrica) confrontandolo con
-    // quelli dei nodi gia' provisionati: se combacia, questo "nuovo"
-    // dispositivo scoperto e' in realta' un nodo gia' configurato che e'
-    // caduto dalla mesh (es. si e' resettato) - vedi conversazione, prima
-    // sembrava che un nodo sparisse/si sostituisse a sorpresa.
+    // Il firmware riconosce l'UUID (fisso di fabbrica) confrontandolo con quelli
+    // dei nodi gia' provisionati: se combacia, questo "nuovo" dispositivo scoperto
+    // e' in realta' un nodo gia' configurato che e' caduto dalla mesh (es. si e'
+    // resettato), prima sembrava che un nodo sparisse/si sostituisse a sorpresa.
     const knownTag = d.known
       ? `<span class="badge warn">Gia' noto${d.knownName ? (': ' + d.knownName) : ''}</span>`
       : '';
@@ -1290,14 +1269,13 @@ function renderNodes() {
   let editingId = null, editingVal = null, editingSel = null;
   if (act && box.contains(act)) {
     // Riepilogo "Impostazioni" (<summary>, niente id) appena cliccato per
-    // aprire/chiudere: un re-render puo' capitare esattamente tra mousedown
-    // e mouseup (il poll gira ogni ~2s indipendentemente dal click) e
-    // sostituendo il <details> sotto al dito il "click" non arriva mai a
-    // buon fine sull'elemento nuovo, quindi il pannello non si apre/chiude
-    // - serviva anche piu' di un tentativo per riuscire a chiuderlo, vedi
-    // conversazione ("il menu impostazioni fatica a chiudersi"). openState
-    // e' comunque gia' tracciato a parte in openSettingsNodes/isOpen, quindi
-    // saltare il render qui non perde nessuno stato.
+    // aprire/chiudere: un re-render puo' capitare esattamente tra mousedown e
+    // mouseup (il poll gira ogni ~2s indipendentemente dal click) e sostituendo il
+    // <details> sotto al dito il "click" non arriva mai a buon fine sull'elemento
+    // nuovo, quindi il pannello non si apre/chiude - serviva anche piu' di un
+    // tentativo per riuscire a chiuderlo. openState e' comunque gia' tracciato a
+    // parte in openSettingsNodes/isOpen, quindi saltare il render qui non perde
+    // nessuno stato.
     if (act.tagName === 'SUMMARY' && act.closest('.node-settings')) return;
     if (!act.id) return;
     // Checkbox Lampada/Sensore in corso di click: un re-render qui
@@ -1376,11 +1354,11 @@ function renderNode(nd) {
   const nameInput = `<input class="name-input" id="nm_${nd.i}" value="${(nd.name||'').replace(/"/g,'')}" placeholder="Nome dispositivo">`
     + `<button class="btn sm" data-act="setname" data-node="${nd.i}">Salva</button> <span class="muted" id="nmsave_${nd.i}"></span>`;
 
-  // Nodo raggiungibile davvero adesso, non solo "configurato una volta" -
-  // basato sull'ultima risposta reale vista dal firmware (main.c
-  // node_is_online/s_node_last_seen_us). Prima era un badge "Offline" a se'
-  // stante accanto al pill "Connesso" (i due si contraddicevano a vista) -
-  // ora sostituisce direttamente il pill stesso, in rosso - vedi conversazione.
+  // Nodo raggiungibile davvero adesso, non solo "configurato una volta" - basato
+  // sull'ultima risposta reale vista dal firmware (main.c
+  // node_is_online/s_node_last_seen_us). Prima era un badge "Offline" a se' stante
+  // accanto al pill "Connesso" (i due si contraddicevano a vista) - ora sostituisce
+  // direttamente il pill stesso, in rosso.
   const swOffline = nd.sw && nd.cfg && !nd.online;
   if (nd.sw) {
     const swCls = swOffline ? 'err' : (nd.cfg ? 'ok' : (nd.fail ? 'err' : 'wait'));
@@ -1411,7 +1389,7 @@ function renderNode(nd) {
   // card e il suo traffico MQTT indipendente - vedi CFG:SETKIND lato
   // firmware. Due checkbox indipendenti al posto del vecchio <select>
   // Lampada/Sensore esclusivo.
-  //
+  // 
   // BUG FIX ("non fa deselezionare Lampada mantenendo Sensore"): il valore
   // mostrato non viene piu' letto SOLO da nd.kind (che riflette l'ULTIMO
   // stato confermato dal firmware). Se un poll periodico arriva PRIMA che
@@ -1436,15 +1414,13 @@ function renderNode(nd) {
   const grpBadge = hasLampKind
     ? (nd.grp ? `<span class="badge good">Gruppo OK</span>` : `<span class="badge warn">non rebindato</span>`)
     : '';
-  // rebindPending: CFG:OK;REBIND arriva quasi subito ma significa solo
-  // "richiesta accodata" (mesh_handler_node_rebind mette l'indirizzo in
-  // coda, vedi cfg_rebind() in cfg_protocol.c) - la vera riconfigurazione
-  // gira async nel thread di config, senza alcun evento "fatto" dedicato.
-  // Senza questo il pulsante non dava alcun segno di vita dopo il click -
-  // vedi conversazione ("non ho feedback visivo se sta facendo il
-  // rebind"). Stesso schema di kindPending: uno stato "in corso" con
-  // scadenza temporale, riletto qui ad ogni renderNode() (che altrimenti
-  // ricostruirebbe il pulsante da zero al prossimo poll, ~2s, perdendo
+  // rebindPending: CFG:OK;REBIND arriva quasi subito ma significa solo "richiesta
+  // accodata" (mesh_handler_node_rebind mette l'indirizzo in coda, vedi
+  // cfg_rebind() in cfg_protocol.c) - la vera riconfigurazione gira async nel
+  // thread di config, senza alcun evento "fatto" dedicato. Senza questo il pulsante
+  // non dava alcun segno di vita dopo il click. Stesso schema di kindPending: uno
+  // stato "in corso" con scadenza temporale, riletto qui ad ogni renderNode() (che
+  // altrimenti ricostruirebbe il pulsante da zero al prossimo poll, ~2s, perdendo
   // qualunque manipolazione diretta del DOM fatta al click).
   const rbPending = rebindPending[nd.i];
   const rbLive = rbPending && Date.now() < rbPending.until;
@@ -1452,20 +1428,18 @@ function renderNode(nd) {
   if (rbPending && !rbLive) {
     delete rebindPending[nd.i];
   }
-  // Il rebind lato firmware (mesh_handler_node_rebind) rifà la Composition
-  // Data Get/AppKey Add/Model Bind per QUALSIASI nodo, non solo le lampade -
-  // era limitato a hasLampKind qui in PWA senza motivo, il che impediva di
-  // rebindare un sensore per fargli (ri)scoprire un Sensor Setup Server
-  // aggiunto al parsing dopo che il nodo era già configurato (vedi
-  // conversazione: "rebind lo hanno solo le lampade, non i sensori").
+  // Il rebind lato firmware (mesh_handler_node_rebind) rifà la Composition Data
+  // Get/AppKey Add/Model Bind per QUALSIASI nodo, non solo le lampade - era
+  // limitato a hasLampKind qui in PWA senza motivo, il che impediva di rebindare un
+  // sensore per fargli (ri)scoprire un Sensor Setup Server aggiunto al parsing dopo
+  // che il nodo era già configurato.
   const rbtn = (hasLampKind || hasSensorKind)
     ? `<button class="btn sm" data-act="rebind" data-node="${nd.i}" ${rbLive ? 'disabled' : ''}>${rbLive ? 'Rebind in corso...' : 'Rebind'}</button>`
     : '';
-  // Companion switch: calcolato qui (non piu' in fondo dentro lampBlock)
-  // cosi' puo' finire nel pannello Impostazioni insieme a spunte/Rebind -
-  // vedi conversazione ("snellire la card, dentro un pulsante settings").
-  // Stessa guardia hasLampKind di prima: un nodo solo-sensore non ha
-  // companion switch (e' un'estensione del lato lampada del device).
+  // Companion switch: calcolato qui (non piu' in fondo dentro lampBlock) cosi' puo'
+  // finire nel pannello Impostazioni insieme a spunte/Rebind. Stessa guardia
+  // hasLampKind di prima: un nodo solo-sensore non ha companion switch (e'
+  // un'estensione del lato lampada del device).
   let companion = '';
   if (hasLampKind) {
     const qrBtn = `<button type="button" class="iconbtn qr-scan-btn" data-act="qrscan" data-node="${nd.i}" title="Scansiona QR con la fotocamera"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg></button>`;
@@ -1495,36 +1469,30 @@ function renderNode(nd) {
   const head = `<div class="node${offline ? ' node-offline' : ''}"><div class="node-head">${nameInput}${groupBadge}${fbtn}</div>`;
 
   let body = '';
-  // calibCard va nel pannello Impostazioni insieme a spunte/Rebind/
-  // Companion (vedi settingsCards sotto), non piu' accanto alle card dati
-  // sensore - vedi conversazione ("mettu dentro anche la calibrazione
-  // lux"). Dichiarato qui fuori perche' popolato solo se hasSensorKind &&
-  // nd.cfg, ma il pannello Impostazioni si costruisce comunque anche per
-  // un nodo non ancora configurato (kindPicker/Rebind restano utili).
+  // calibCard va nel pannello Impostazioni insieme a spunte/Rebind/ Companion (vedi
+  // settingsCards sotto), non piu' accanto alle card dati sensore. Dichiarato qui
+  // fuori perche' popolato solo se hasSensorKind && nd.cfg, ma il pannello
+  // Impostazioni si costruisce comunque anche per un nodo non ancora configurato
+  // (kindPicker/Rebind restano utili).
   let calibCard = '';
 
   if (!nd.cfg) {
     body = `<div class="empty" style="margin-top:10px">Non ancora configurato.</div>`;
   } else {
-    // Un device combo con entrambi i bit mostra sia le card sensore sia
-    // quelle lampada, una sotto l'altra (prima erano mutuamente esclusive:
-    // if/else su nd.kind === 1, che per un device con 2 LED + PIR/LUX
-    // scartava sempre uno dei due set di dati gia' presenti in nd - vedi
-    // conversazione: "esistono dispositivi che possono avere PIR e Led
-    // assieme").
+    // Un device combo con entrambi i bit mostra sia le card sensore sia quelle
+    // lampada, una sotto l'altra (prima erano mutuamente esclusive: if/else su
+    // nd.kind === 1, che per un device con 2 LED + PIR/LUX scartava sempre uno dei
+    // due set di dati gia' presenti in nd.
     if (hasSensorKind || hasLampKind) {
       const s = nd.sensor;
-      // Ogni card e' mostrata solo se il device ha risposto almeno una
-      // volta a QUELLA specifica proprietà (pres/light/power/energyWh sono
-      // null finché il Sensor Descriptor Get non conferma il supporto, vedi
-      // discover_sensor_caps in mesh_handler.c) - niente più card vuote
-      // "—" per sempre su proprietà che il device non ha affatto (es.
-      // Presenza/Luce su un driver con solo potenza, o Potenza/Energia su
-      // un sensore PIR/lux puro). Vedi conversazione.
-      // Presenza/Luce solo per il lato "sensore" (PIR/lux) - Potenza/Energia
-      // solo per il lato "lampada" (i driver LED misurano il proprio consumo,
-      // non hanno PIR/lux) - vedi conversazione ("lampade: non hanno pir e
-      // lux - sensori: non hanno potenza/energia - misti hanno tutto").
+      // Ogni card e' mostrata solo se il device ha risposto almeno una volta a
+      // QUELLA specifica proprietà (pres/light/power/energyWh sono null finché il
+      // Sensor Descriptor Get non conferma il supporto, vedi discover_sensor_caps
+      // in mesh_handler.c) - niente più card vuote "—" per sempre su proprietà che
+      // il device non ha affatto (es. Presenza/Luce su un driver con solo potenza,
+      // o Potenza/Energia su un sensore PIR/lux puro). Presenza/Luce solo per il
+      // lato "sensore" (PIR/lux) - Potenza/Energia solo per il lato "lampada" (i
+      // driver LED misurano il proprio consumo, non hanno PIR/lux).
       const presCard = (hasSensorKind && s && s.pres != null)
         ? `<div class="card"><div class="elem-title">Presenza <span class="pill ${s.pres>0?'on':'off'}">${s.pres?'Presenza':'Assente'}</span></div></div>`
         : '';
@@ -1549,25 +1517,19 @@ function renderNode(nd) {
       const energyCard = (hasLampKind && s && s.energyWh != null)
         ? `<div class="card"><div class="elem-title">Energia</div><div class="pctlbl" style="margin-top:6px">${s.energyWh} Wh</div></div>`
         : '';
-      // Sensibilità PIR (Sensor Setting Motion Threshold) - PRIMA era
-      // annidata dentro il blocco "if (hasLampKind)" più sotto, quindi non
-      // compariva mai per un nodo sensore puro (kind solo NODE_KIND_SENSOR,
-      // senza bit lampada) - vedi conversazione ("rebind fatto ma non
-      // appare... i sensori pir+lux non hanno né sensibilità pir né
-      // calibrazione lux"). Va quindi qui, nello stesso blocco di
-      // presCard/luxCard/calibCard sopra, raggiungibile sia da lampade che
-      // da sensori puri.
-      //
-      // Gate su presCard (non solo su nd.pir.haspir): "haspir" dice solo
-      // che il nodo ha UN Sensor Setup Server, ma alcune lampade/driver DALI
-      // ne hanno uno solo per la calibrazione lux (luce ambiente per il
-      // dimming automatico), senza alcun sensore di presenza reale - senza
-      // questo controllo lo slider Sensibilità PIR compariva anche lì,
-      // scrivendo un Motion Threshold che il device non usa per nulla -
-      // vedi conversazione ("le lampade hanno ancora sensibilità pir").
-      // presCard e' vuota finche' il device non ha risposto almeno una
-      // volta con un valore di presenza reale (s.pres != null), stesso
-      // schema "nascondi finche' non confermato" gia' usato per luxCard.
+      // Sensibilità PIR (Sensor Setting Motion Threshold) - PRIMA era annidata
+      // dentro il blocco "if (hasLampKind)" più sotto, quindi non compariva mai per
+      // un nodo sensore puro (kind solo NODE_KIND_SENSOR, senza bit lampada). Va
+      // quindi qui, nello stesso blocco di presCard/luxCard/calibCard sopra,
+      // raggiungibile sia da lampade che da sensori puri. Gate su presCard (non
+      // solo su nd.pir.haspir): "haspir" dice solo che il nodo ha UN Sensor Setup
+      // Server, ma alcune lampade/driver DALI ne hanno uno solo per la calibrazione
+      // lux (luce ambiente per il dimming automatico), senza alcun sensore di
+      // presenza reale - senza questo controllo lo slider Sensibilità PIR compariva
+      // anche lì, scrivendo un Motion Threshold che il device non usa per nulla.
+      // presCard e' vuota finche' il device non ha risposto almeno una volta con un
+      // valore di presenza reale (s.pres != null), stesso schema "nascondi finche'
+      // non confermato" gia' usato per luxCard.
       let pirCard = '';
       if (presCard && nd.pir && nd.pir.haspir) {
         const pirVal = nd.pir.value !== null ? nd.pir.value : 50;
@@ -1583,15 +1545,14 @@ function renderNode(nd) {
       const warn = !s || !s.hassens ? `<div class="addr" style="margin-top:8px">(nessun Sensor Server su questo device)</div>`
         : (!anySensorCard ? `<div class="addr" style="margin-top:8px">(in attesa di dati dal sensore...)</div>` : '');
 
-      // Calibrazione lux reale (come fa l'app MeshProv/Silvair - vedi
-      // conversazione): scrive il valore letto da un luxmetro esterno
-      // DIRETTAMENTE nel sensore via Sensor Setting Set sulla proprietà
-      // Present Ambient Light Level (CFG:SETLUXCALIB;lux_x100=...), non un
-      // fattore calcolato qui in JS come la vecchia calibrazione locale
-      // (mai vista dal resto della mesh). Richiede lo stesso Sensor Setup
-      // Server della sensibilità PIR (nd.luxcalib.haslux, vedi node_dump_cb
-      // in mesh_handler.c), non solo che il device confermi il supporto
-      // lux (luxCard) - un device senza Sensor Setup Server può comunque
+      // Calibrazione lux reale (come fa l'app MeshProv/Silvair: scrive il valore
+      // letto da un luxmetro esterno DIRETTAMENTE nel sensore via Sensor Setting
+      // Set sulla proprietà Present Ambient Light Level
+      // (CFG:SETLUXCALIB;lux_x100=...), non un fattore calcolato qui in JS come la
+      // vecchia calibrazione locale (mai vista dal resto della mesh). Richiede lo
+      // stesso Sensor Setup Server della sensibilità PIR (nd.luxcalib.haslux, vedi
+      // node_dump_cb in mesh_handler.c), non solo che il device confermi il
+      // supporto lux (luxCard) - un device senza Sensor Setup Server può comunque
       // riportare lux ma non accettare la scrittura del valore.
       if (luxCard && nd.luxcalib && nd.luxcalib.haslux) {
         const refKnown = nd.luxcalib.ref_x100 !== null;
@@ -1602,15 +1563,14 @@ function renderNode(nd) {
         // Preserva il valore che l'utente sta digitando nel campo lux di riferimento
         const refLuxCurrentVal = document.getElementById(`cref-${nd.i}`)?.value ?? '';
 
-        // Misura automatica (come "Misura automatica" nell'app MeshProv/
-        // Silvair - vedi conversazione): pilota le lampade dello STESSO
-        // gruppo mesh di questo sensore su 4 livelli mentre legge il
-        // sensore, poi ricalibra i target Light LC delle lampade - non
-        // tocca il sensore (quello lo fa solo la calibrazione manuale
-        // sopra). Richiede che il sensore sia in un gruppo con almeno una
-        // lampada, altrimenti il gateway non saprebbe quali lampade
-        // pilotare (nessun concetto di "lampade associate" lato firmware,
-        // lo decide la PWA qui). ~20s totali (4 step x ~4.2s + margini).
+        // Misura automatica (come "Misura automatica" nell'app MeshProv/ Silvair:
+        // pilota le lampade dello STESSO gruppo mesh di questo sensore su 4 livelli
+        // mentre legge il sensore, poi ricalibra i target Light LC delle lampade -
+        // non tocca il sensore (quello lo fa solo la calibrazione manuale sopra).
+        // Richiede che il sensore sia in un gruppo con almeno una lampada,
+        // altrimenti il gateway non saprebbe quali lampade pilotare (nessun
+        // concetto di "lampade associate" lato firmware, lo decide la PWA qui).
+        // ~20s totali (4 step x ~4.2s + margini).
         const groupLamps = nd.grpaddr
           ? lastState.nodes.filter((n) => n.grpaddr === nd.grpaddr && (n.kind & 1))
           : [];
@@ -1711,15 +1671,14 @@ function renderNode(nd) {
         const lastCtl = lastNodeVals[`ctl-${ctlKey}`]?.temp;
         const ctlBump = lastCtl !== undefined && lastCtl !== tempK ? ' animate-value-bump' : '';
         lastNodeVals[`ctl-${ctlKey}`] = { temp: tempK };
-        // Stesso meccanismo di riempimento --p dello slider luminosita'
-        // (.slider in style.css usa var(--p,0) come PERCENTUALE 0-100 per
-        // colorare il tratto già "attraversato" dal pallino) - qui pero'
-        // il valore nativo dell'input non e' gia' una percentuale (e' in
-        // Kelvin, 2700-6500), quindi va convertito esplicitamente, sia qui
-        // in rendering sia nel listener 'input' sotto (altrimenti --p resta
-        // sempre al default 0 e il riempimento colorato non segue mai il
-        // pallino, pur muovendosi il pallino nativo correttamente in base a
-        // min/max/value - vedi conversazione "il pallino non segue la barra").
+        // Stesso meccanismo di riempimento --p dello slider luminosita' (.slider in
+        // style.css usa var(--p,0) come PERCENTUALE 0-100 per colorare il tratto
+        // già "attraversato" dal pallino) - qui pero' il valore nativo dell'input
+        // non e' gia' una percentuale (e' in Kelvin, 2700-6500), quindi va
+        // convertito esplicitamente, sia qui in rendering sia nel listener 'input'
+        // sotto (altrimenti --p resta sempre al default 0 e il riempimento colorato
+        // non segue mai il pallino, pur muovendosi il pallino nativo correttamente
+        // in base a min/max/value.
         const ctlPct = Math.round(((tempK - CTL_MIN) / (CTL_MAX - CTL_MIN)) * 100);
         cards += `<div class="card"><div class="elem-title">Colore<span class="pctlbl${ctlBump}" data-ctl-label="${nd.i}">${tempK}K</span></div>
           <input type="range" min="${CTL_MIN}" max="${CTL_MAX}" step="50" value="${tempK}" style="--p:${ctlPct}" class="slider ctl-slider"
@@ -1730,16 +1689,13 @@ function renderNode(nd) {
     }
   }
 
-  // Pannello "Impostazioni" richiudibile: spunte Lampada/Sensore, Rebind/
-  // badge gruppo, Companion switch, Calibrazione Lux - tutta roba di
-  // configurazione occasionale, non i controlli operativi (accendi/
-  // spegni/livello) che restano sempre visibili nel body sopra - vedi
-  // conversazione ("snellire un po'"). Card separate (griglia .cards)
-  // invece di un unico blocco - vedi conversazione ("fai piu' card e non
-  // una unica"). Chiuso di default, ma resta aperto tra un refresh e
-  // l'altro se l'utente lo apre (openSettingsNodes, vedi sopra e il
-  // listener "toggle" in wireNodeEvents) - senza, il poll ogni ~2s lo
-  // richiudeva sotto al dito - vedi conversazione ("non sta aperto da solo").
+  // Pannello "Impostazioni" richiudibile: spunte Lampada/Sensore, Rebind/ badge
+  // gruppo, Companion switch, Calibrazione Lux - tutta roba di configurazione
+  // occasionale, non i controlli operativi (accendi/ spegni/livello) che restano
+  // sempre visibili nel body sopra. Card separate (griglia .cards) invece di un
+  // unico blocco. Chiuso di default, ma resta aperto tra un refresh e l'altro se
+  // l'utente lo apre (openSettingsNodes, vedi sopra e il listener "toggle" in
+  // wireNodeEvents) - senza, il poll ogni ~2s lo richiudeva sotto al dito.
   const settingsCards = [
     `<div class="card">${kindPicker}</div>`,
     (rbtn || grpBadge) ? `<div class="card">${rbtn} ${grpBadge}</div>` : '',
@@ -1748,19 +1704,17 @@ function renderNode(nd) {
   ].filter(Boolean).join('');
   const isOpen = openSettingsNodes.has(nd.i) ? ' open' : '';
   const settingsPanel = `<details class="node-settings" id="settings_${nd.i}" data-node="${nd.i}"${isOpen}><summary>${gearIcon}Impostazioni</summary><div class="node-settings-body cards">${settingsCards}</div></details>`;
-  // Pulsante Impostazioni in linea con #idx/indirizzo/pill di stato (stessa
-  // riga node-meta, non piu' una riga propria sotto) - vedi conversazione
-  // ("metti in linea il pulsante settings a #1 0x0031 Connesso").
+  // Pulsante Impostazioni in linea con #idx/indirizzo/pill di stato (stessa riga
+  // node-meta, non piu' una riga propria sotto).
   const meta = `<div class="node-meta">${settingsPanel}<span style="margin-left:auto;display:flex;align-items:center;gap:8px"><span class="node-id"><span class="idx">#${nd.i}</span><span class="addr">${nd.base}</span></span>${grpBadge}<span class="pill ${stCls}">${stTxt}</span></span></div>`;
 
   return head + meta + body + `</div>`;
 }
 
 function wireNodeEvents(box) {
-  // Ricorda quali pannelli Impostazioni sono aperti (openSettingsNodes,
-  // vedi sopra) cosi' il prossimo renderNodes() (ogni poll, ~2s) li
-  // ricostruisce gia' aperti invece di richiuderli sotto al dito - vedi
-  // conversazione ("non sta aperto da solo").
+  // Ricorda quali pannelli Impostazioni sono aperti (openSettingsNodes, vedi sopra)
+  // cosi' il prossimo renderNodes() (ogni poll, ~2s) li ricostruisce gia' aperti
+  // invece di richiuderli sotto al dito.
   box.querySelectorAll('.node-settings').forEach(el => {
     el.addEventListener('toggle', () => {
       const ni = parseInt(el.dataset.node, 10);
@@ -1958,12 +1912,11 @@ function wireNodeEvents(box) {
 export function renderStatus(status) {
   lastStatus = status;
 
-  // Il firmware ora include CFG:HUBNAME nel blocco CFG:STATUS (prima era
-  // solo scrittura, un reload della PWA mostrava sempre il campo vuoto anche
-  // col nome gia' impostato sul gateway - vedi conversazione: "vorrei che la
-  // pwa lo leggesse il nome settato"). Non tocca il campo se l'utente ci sta
-  // scrivendo dentro in questo momento (stesso guard anti-refresh usato
-  // altrove per gli input, es. renderGroups).
+  // Il firmware ora include CFG:HUBNAME nel blocco CFG:STATUS (prima era solo
+  // scrittura, un reload della PWA mostrava sempre il campo vuoto anche col nome
+  // gia' impostato sul gateway. Non tocca il campo se l'utente ci sta scrivendo
+  // dentro in questo momento (stesso guard anti-refresh usato altrove per gli
+  // input, es. renderGroups).
   const hubnameInput = document.getElementById('hubname-input');
   if (hubnameInput && document.activeElement !== hubnameInput && status.hubName !== undefined) {
     hubnameInput.value = status.hubName;
@@ -1994,22 +1947,20 @@ export function onCmdResult(type, cmd) {
   }
 }
 
-// Prima erano due liste separate e slegate (checkbox "abilitato" in una
-// sezione, pulsante on/off degli abilitati in un'altra sotto) - per capire
-// lo stato di un relè bisognava guardare in due punti diversi della pagina.
-// Ora ogni relè e' una card sola, stile coerente col resto dell'app (nodi
-// mesh/slot beacon) - vedi conversazione ("rifai la pagina dispositivo").
+// Prima erano due liste separate e slegate (checkbox "abilitato" in una sezione,
+// pulsante on/off degli abilitati in un'altra sotto) - per capire lo stato di un
+// relè bisognava guardare in due punti diversi della pagina. Ora ogni relè e' una
+// card sola, stile coerente col resto dell'app (nodi mesh/slot beacon).
 function renderRelays() {
   const relays = lastStatus.relays || [];
   const box = document.getElementById('relays');
   if (!relays.length) { box.innerHTML = '<i class="muted">Nessun rel&egrave; rilevato</i>'; return; }
   box.innerHTML = relays.map(r => {
-    // Pulsante toggle grande (era un .btn sm minuscolo in mezzo alla riga):
-    // e' l'azione principale della card, deve pesare visivamente di piu' -
-    // vedi conversazione ("pulsantoni piu' grandi").
-    // Disabilitato: stesso aspetto del pulsante "Spento" ma non cliccabile
-    // e grigio, invece di un dashed-border con testo diverso ("Non
-    // presente") che sembrava un elemento a se' - vedi conversazione.
+    // Pulsante toggle grande (era un .btn sm minuscolo in mezzo alla riga): e'
+    // l'azione principale della card, deve pesare visivamente di piu'.
+    // Disabilitato: stesso aspetto del pulsante "Spento" ma non cliccabile e
+    // grigio, invece di un dashed-border con testo diverso ("Non presente") che
+    // sembrava un elemento a se'.
     const toggleBtn = r.enabled
       ? `<button class="relay-toggle-btn${r.on ? ' on' : ''}" data-act="relayset" data-n="${r.n}" data-on="${r.on ? 1 : 0}">${r.on ? 'Acceso' : 'Spento'}</button>`
       : `<div class="relay-toggle-btn disabled">Spento</div>`;
@@ -2031,9 +1982,8 @@ function renderRelays() {
   });
   box.querySelectorAll('[data-act="relaycfg"]').forEach(c => {
     c.addEventListener('change', () => {
-      // Disabilitare un relè che era acceso non deve lasciarlo alimentato:
-      // manda anche lo spegnimento fisico, non solo il flag "abilitato" -
-      // vedi conversazione.
+      // Disabilitare un relè che era acceso non deve lasciarlo alimentato: manda
+      // anche lo spegnimento fisico, non solo il flag "abilitato".
       if (!c.checked && c.dataset.on === '1') {
         api.sendCmd(`CFG:RELAYSET;n=${c.dataset.n};val=0`);
       }
@@ -2043,10 +1993,9 @@ function renderRelays() {
   });
 }
 
-// Striscia di stato del modem MQTT (tab Dispositivo, tra i relè e il log):
-// stato sintetico del firmware (modem_mqtt.c) + ultimo payload ricevuto,
-// utile per capire se il gateway sta parlando col server senza dover aprire
-// il log seriale - vedi conversazione.
+// Striscia di stato del modem MQTT (tab Dispositivo, tra i relè e il log): stato
+// sintetico del firmware (modem_mqtt.c) + ultimo payload ricevuto, utile per capire
+// se il gateway sta parlando col server senza dover aprire il log seriale.
 const MQTT_STATE_INFO = {
   0: { cls: 'bad',  label: 'Non risponde' },
   1: { cls: 'warn', label: 'Riconnessione in corso...' },
@@ -2071,11 +2020,10 @@ function renderMqttStrip() {
 }
 
 // "last" arriva dal firmware come "chiave=valore;chiave2=valore2;...;rssi=N"
-// (ble_classic_handler.c, un pezzo per ogni NOME della regola di decodifica
-// piu' l'rssi in coda): prima veniva mostrato cosi' com'era, illeggibile.
-// Qui diventa una fila di chip valore/etichetta, l'RSSI evidenziato diverso
-// dagli altri (e' un dato di contesto, non una lettura del sensore) - vedi
-// conversazione.
+// (ble_classic_handler.c, un pezzo per ogni NOME della regola di decodifica piu'
+// l'rssi in coda): prima veniva mostrato cosi' com'era, illeggibile. Qui diventa
+// una fila di chip valore/etichetta, l'RSSI evidenziato diverso dagli altri (e' un
+// dato di contesto, non una lettura del sensore).
 function renderSensorReadings(lastStr) {
   const pairs = (lastStr || '').split(';').filter(Boolean).map(p => {
     const eq = p.indexOf('=');
@@ -2099,31 +2047,27 @@ function renderSensorSlots() {
   if (sensorSlotsDirty) return;
 
   const box = document.getElementById('sensor-slots');
-  // Stesso "gioco di velocita'" gia' visto col menu Lampada/Sensore: il
-  // refresh periodico (ogni ~2s, CFG:STATUS) ridisegna la card e un
-  // <details> aperto da meno di un secondo si ritrova chiuso di scatto,
-  // prima ancora che l'utente riesca a leggerne il contenuto - vedi
-  // conversazione. Se un pannello "Configurazione" e' aperto, salta il
-  // render finche' l'utente non lo chiude da solo.
+  // Stesso "gioco di velocita'" gia' visto col menu Lampada/Sensore: il refresh
+  // periodico (ogni ~2s, CFG:STATUS) ridisegna la card e un <details> aperto da
+  // meno di un secondo si ritrova chiuso di scatto, prima ancora che l'utente
+  // riesca a leggerne il contenuto. Se un pannello "Configurazione" e' aperto,
+  // salta il render finche' l'utente non lo chiude da solo.
   if (box && box.querySelector('.slot-edit[open]')) return;
   let h = '';
   for (let i = 0; i < 8; i++) {
     const s = list.find(x => x.slot === i) || { slot: i, name: '', mac: '', rules: '' };
     const hasData = !!(s.mac);
     // Stato live integrato nella card (prima era una lista separata sopra,
-    // scollegata visivamente dai campi dello stesso slot) - vedi
-    // conversazione ("card come nella mesh" anche per i beacon).
+    // scollegata visivamente dai campi dello stesso slot).
     const pill = !hasData
       ? `<span class="pill wait">Vuoto</span>`
       : (s.last ? `<span class="pill ok">Attivo</span>` : `<span class="pill err">Offline</span>`);
     const liveLine = hasData
       ? (s.last ? renderSensorReadings(s.last) : `<div class="sensor-live-line offline">in attesa beacon...</div>`)
       : `<div class="sensor-live-line offline">Slot non configurato</div>`;
-    // Il dato letto e' la cosa che interessa a colpo d'occhio, la
-    // configurazione (nome/mac/regole) e' roba da toccare una volta e poi
-    // dimenticare - demota a pannello richiudibile invece di stare sempre
-    // in vista quanto i valori letti - vedi conversazione ("dai piu'
-    // risalto ai dati").
+    // Il dato letto e' la cosa che interessa a colpo d'occhio, la configurazione
+    // (nome/mac/regole) e' roba da toccare una volta e poi dimenticare - demota a
+    // pannello richiudibile invece di stare sempre in vista quanto i valori letti.
     h += `<div class="node">
       <div class="node-head"><span class="idx">Slot ${i+1}${s.name?(': '+s.name):''}</span>${pill}</div>
       ${liveLine}
@@ -2145,11 +2089,10 @@ function renderSensorSlots() {
   box.querySelectorAll('[data-act="sensorsave"]').forEach(b => {
     b.addEventListener('click', () => {
       sensorSlotsDirty = false; // permette il ridisegno con i nuovi dati dall'ESP
-      // Chiude il pannello "Configurazione": resterebbe aperto altrimenti,
-      // e la protezione anti-refresh aggiunta per non farlo richiudere da
-      // solo (vedi conversazione) bloccherebbe ANCHE il render con la
-      // conferma del salvataggio, dando l'impressione che "Salva" non
-      // faccia nulla.
+      // Chiude il pannello "Configurazione": resterebbe aperto altrimenti, e la
+      // protezione anti-refresh aggiunta per non farlo richiudere da solo
+      // bloccherebbe ANCHE il render con la conferma del salvataggio, dando
+      // l'impressione che "Salva" non faccia nulla.
       const details = b.closest('.slot-edit');
       if (details) details.open = false;
       const i = b.dataset.slot;
@@ -2205,11 +2148,9 @@ function renderByteRow(mac, type, id, hex) {
   let row = `<div style="font-size:.85em;margin-top:4px">${label}`;
   bytes.forEach((b, i) => {
     const offKey = key + '|' + i;
-    // "Appena cambiato" solo su QUESTA chiamata (confronto con l'hex della
-    // volta precedente, sotto sovrascritto subito dopo): fa scattare il
-    // lampo byte-flash una volta sola, non ad ogni ridisegno successivo
-    // della stessa riga - vedi conversazione ("migliora il pannello
-    // sniffing a livello... animativo").
+    // "Appena cambiato" solo su QUESTA chiamata (confronto con l'hex della volta
+    // precedente, sotto sovrascritto subito dopo): fa scattare il lampo byte-flash
+    // una volta sola, non ad ogni ridisegno successivo della stessa riga.
     const justChanged = prevBytes[i] !== undefined && prevBytes[i] !== b;
     if (justChanged) everChanged[offKey] = true;
     let cls = everChanged[offKey] ? 'byte changed' : 'byte';
@@ -2263,9 +2204,9 @@ function renderSnifferList() {
   let h = '';
   const sorted = [...filtered].sort((a, b) => b.rssi - a.rssi); // dal più vicino al più lontano
   sorted.forEach(d => {
-    // Stessa gerarchia visiva della lista "dispositivi rilevati" del tab
-    // Mesh: nome in evidenza (.dev-name) sopra, MAC monospace sotto, invece
-    // di MAC-poi-nome-tra-parentesi - vedi conversazione.
+    // Stessa gerarchia visiva della lista "dispositivi rilevati" del tab Mesh: nome
+    // in evidenza (.dev-name) sopra, MAC monospace sotto, invece di
+    // MAC-poi-nome-tra-parentesi.
     const nameStr = d.name
       ? `<span class="dev-name">${d.name}</span>`
       : `<span class="muted">(nome sconosciuto)</span>`;

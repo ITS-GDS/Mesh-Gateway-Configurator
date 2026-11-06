@@ -5,14 +5,13 @@
 /* Scala blu GDS (#002e6d), stessa identica progressione del design system
    di riferimento: --accent qui sopra coincide col loro blue-500. Serve per
    sfumature coerenti (hover/focus/badge) invece di filter:brightness()
-   ad-hoc sparsi nel file - vedi conversazione ("uniforma lo stile grafico"). */
+   ad-hoc sparsi nel file. */
 :root{--blue-50:#eef1f8;--blue-100:#d5dcee;--blue-200:#a8b8de;--blue-300:#6d8fc8;--blue-400:#3a66b2;--blue-500:#002e6d;--blue-600:#00256b;--blue-700:#001c50;--blue-800:#001438;--blue-900:#000c24;--blue-950:#00061a}
 /* --accent (#002e6d) e' quasi nero: perfetto come SFONDO pieno con testo
    bianco sopra (.btn.primary, badge attivi), illeggibile quando usato come
    COLORE DI TESTO/BORDO sottile su uno sfondo gia' scuro (--bg/--surface) -
    pulsanti hover, percentuali, valori sensore, titoletti guida sparivano
-   quasi del tutto in dark mode - vedi conversazione ("risolviamo il blu in
-   modalita' scura, non si leggono..."). --accent-text e' la variante per
+   quasi del tutto in dark mode. --accent-text e' la variante per
    quei casi: un blu piu' chiaro della stessa scala GDS in dark mode (dove
    serve contrasto), lo stesso --accent invariato in light mode (dove il
    navy scuro su sfondo chiaro legge gia' benissimo). */
@@ -23,8 +22,7 @@ html{-webkit-text-size-adjust:100%}
 /* 880px -> ~1600px (limitato al 96% del viewport, non fisso): la connessione
    USB e' obbligatoria (Web Serial), quindi in pratica l'app si usa solo da
    PC/laptop - niente piu' bisogno di tenerla stretta per il mobile. 1180px
-   lasciava ancora enormi barre grigie vuote ai lati su un monitor widescreen
-   - vedi conversazione ("dovevi recuperare lo spazio delle barre laterali"). */
+   lasciava ancora enormi barre grigie vuote ai lati su un monitor widescreen. */
 body{font-family:'Open Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;max-width:none;margin:0;padding:0 28px 56px;color:var(--text);background:var(--bg);line-height:1.45}
 a{color:var(--accent-text)}
 h2,h3,h4{color:var(--text);letter-spacing:-.01em}
@@ -32,8 +30,7 @@ h3{font-size:1.05em;margin:22px 0 10px}h4{font-size:.95em;margin:16px 0 6px}
 code{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:1px 5px;font-family:ui-monospace,Menlo,monospace;font-size:.86em}
 
 /* Header "congelato" (topbar + tabbar + stats mesh) mentre si scorre la
-   pagina, come le righe bloccate di Excel - vedi conversazione ("questo
-   blocchetto possiamo renderlo fisso?"). UN SOLO blocco sticky per l'intero
+   pagina, come le righe bloccate di Excel. UN SOLO blocco sticky per l'intero
    gruppo (non tre sticky separati impilati via offset): il primo tentativo
    aveva margini trasparenti tra i tre elementi sticky, che lasciavano
    intravedere il contenuto sotto durante lo scroll ("manca il fondo") -
@@ -44,14 +41,13 @@ code{background:var(--surface2);border:1px solid var(--border);border-radius:5px
 .brand{display:flex;align-items:center;gap:10px;flex:1;min-width:180px}
 /* Titolo: long-press mostra il popup versione (vedi index.html) - niente
    selezione testo/menu contestuale durante la pressione, sarebbe scattato
-   al posto del popup su mobile - vedi conversazione. */
+   al posto del popup su mobile. */
 #app-title{user-select:none;-webkit-user-select:none;touch-action:manipulation;cursor:default}
 /* Mini popup versione: stesso linguaggio del popup di aggiornamento (fixed,
    card scura, pop-in) ma piu' piccolo e ancorato in alto a sinistra sotto
    al titolo invece che in basso al centro. */
 #version-popup{position:fixed;top:64px;left:16px;z-index:60;max-width:min(320px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-size:.82rem;font-weight:600;font-family:ui-monospace,Menlo,monospace;color:var(--accent-text);box-shadow:0 8px 24px rgba(0,0,0,.35);animation:popIn .18s cubic-bezier(.16,.84,.36,1)}
-/* Pulsazione a "onda", sempre attiva a prescindere dallo stato - vedi
-   conversazione. Prima usava box-shadow con color-mix() ricalcolato ad ogni
+/* Pulsazione a "onda", sempre attiva a prescindere dallo stato. Prima usava box-shadow con color-mix() ricalcolato ad ogni
    frame: su Chrome ogni tanto si "inchiodava" a meta' animazione (bug noto
    di quella combinazione, poco performante). Ora e' uno pseudo-elemento
    ::after che parte dalla stessa dimensione/colore del dot (background:
@@ -65,7 +61,7 @@ code{background:var(--surface2);border:1px solid var(--border);border-radius:5px
 .dot::after{content:'';position:absolute;inset:0;border-radius:50%;background:inherit;animation:dot-pulse 1.6s cubic-bezier(0,0,.2,1) infinite}
 .dot.on{background:var(--green)}
 /* Modalita' USB/config (BOOT premuto sul gateway): stesso blu del LED
-   fisico invece del verde di modalita' normale - vedi conversazione. */
+   fisico invece del verde di modalita' normale. */
 .dot.on.usbmode{background:#2f7bf6}
 .topbar h1{margin:0;font-size:1.18rem;letter-spacing:-.01em;font-weight:700}
 .navbtn,.btn{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-size:.83rem;font-weight:600;color:var(--text);border:1px solid var(--border);border-radius:9px;padding:7px 13px;background:var(--surface);cursor:pointer;font-family:inherit;line-height:1;transition:border-color .12s,color .12s}
@@ -73,7 +69,7 @@ code{background:var(--surface2);border:1px solid var(--border);border-radius:5px
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
 .btn.primary:hover{filter:brightness(1.06);color:var(--accent-fg)}
 /* Ricerca (mesh discovery/sniffer BLE) attiva: blu, stesso colore del LED
-   fisico in modalita' USB - vedi conversazione. */
+   fisico in modalita' USB. */
 .btn.searching{background:#2f7bf6;border-color:#2f7bf6;color:#fff}
 .btn.searching:hover{filter:brightness(1.06);color:#fff}
 .btn.danger:hover{border-color:var(--red);color:var(--red)}
@@ -83,8 +79,7 @@ code{background:var(--surface2);border:1px solid var(--border);border-radius:5px
 /* Pulsante Connetti/Disconnetti: transizione morbida di colore quando
    cambia stato (non uno scatto secco), un anello che si dilata dal bordo al
    click (stesso "burst" del pulsante Aggiorna) e l'etichetta che scorre via
-   di lato e la nuova entra dall'altro, invece di cambiare testo di colpo -
-   vedi conversazione. */
+   di lato e la nuova entra dall'altro, invece di cambiare testo di colpo. */
 #btn-connect{position:relative;overflow:hidden;transition:background .3s,border-color .3s,color .3s}
 .btn.connected{background:color-mix(in srgb,var(--red) 16%,var(--surface));border-color:var(--red);color:var(--red)}
 .btn.connected:hover{filter:brightness(1.1);color:var(--red)}
@@ -108,15 +103,13 @@ code{background:var(--surface2);border:1px solid var(--border);border-radius:5px
 
 /* Pulsante notte/giorno: mostra l'icona di CIO' SU CUI SI STA PER CLICCARE
    (di notte mostra il sole = "passa al giorno", di giorno mostra la luna =
-   "passa alla notte"), non lo stato attuale - vedi conversazione. Sole e
+   "passa alla notte"), non lo stato attuale. Sole e
    luna sono sovrapposti nello stesso spazio; ui.js pilota via classi
    icon-appear/icon-disappear/icon-idle due animazioni DISTINTE per entrata e
-   uscita di ciascuna icona (non una singola transizione simmetrica) - vedi
-   conversazione ("un'animazione per far sparire il sole e una per farlo
-   riapparire, lo stesso per la luna"). icon-idle e' la vita "a riposo"
+   uscita di ciascuna icona (non una singola transizione simmetrica). icon-idle e' la vita "a riposo"
    (rotazione lenta del sole / fluttuazione della luna), attiva solo a
    transizione conclusa cosi' non entra in conflitto con appear/disappear
-   sulla stessa proprieta' transform.*/
+   sulla stessa proprieta' transform. */
 .theme-toggle{position:relative;overflow:hidden}
 .theme-icon{position:absolute;top:50%;left:50%;width:17px;height:17px;margin:-8.5px 0 0 -8.5px}
 .theme-icon.sun{color:#f2b34a}
@@ -145,16 +138,12 @@ code{background:var(--surface2);border:1px solid var(--border);border-radius:5px
 
 /* Rotazione pura non si vedrebbe quasi (il sole ha 8 raggi simmetrici ogni
    45°): ci aggiungo un "respiro" di scala cosi' il movimento resta visibile
-   per tutto il giro, non solo nei 45° dispari - vedi conversazione (dopo il
-   fix per il pulsante vuoto, "mancano tutte le animazioni" era in realta'
-   l'idle troppo lento/impercettibile). */
+   per tutto il giro, non solo nei 45° dispari. */
 @keyframes sun-spin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.15)}100%{transform:rotate(360deg) scale(1)}}
 @keyframes moon-float{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-3px) rotate(4deg)}}
 /* Tramonto/alba: l'icona che esce sprofonda verso il basso e sfuma (come il
    sole che tramonta sotto l'orizzonte), quella che entra sale da sotto verso
-   il centro (come un'alba) - non piu' un pop elastico sul posto, vedi
-   conversazione ("al click, l'oggetto mostrato dovrebbe tramontare e
-   risalire l'opposto"). overflow:hidden su .theme-toggle fa da "orizzonte"
+   il centro (come un'alba) - non piu' un pop elastico sul posto. overflow:hidden su .theme-toggle fa da "orizzonte"
    che le taglia ai bordi del pulsante. */
 @keyframes sun-appear{0%{opacity:0;transform:translateY(14px)}100%{opacity:1;transform:translateY(0)}}
 @keyframes sun-disappear{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(14px)}}
@@ -165,8 +154,7 @@ code{background:var(--surface2);border:1px solid var(--border);border-radius:5px
    allineata a sinistra, poi un tentativo centrato ma comunque stretto -
    risultava sproporzionato su un monitor widescreen): ogni pulsante e'
    flex:1, si spartiscono in parti uguali l'intera riga invece di restare
-   un gruppetto compatto in mezzo a tanto spazio vuoto - vedi conversazione
-   ("belle ampie, ad espandersi del tutto la larghezza"). Sotto i 480px
+   un gruppetto compatto in mezzo a tanto spazio vuoto. Sotto i 480px
    passano a due righe (flex-wrap) restando comunque a piena larghezza. */
 .tabbar{display:flex;gap:10px;margin:10px 0 26px}
 .tabbtn{flex:1;text-align:center;padding:14px 20px;border-radius:12px;font-size:1.05rem;font-weight:700;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;text-decoration:none;font-family:inherit;display:inline-block}
@@ -179,8 +167,7 @@ code{background:var(--surface2);border:1px solid var(--border);border-radius:5px
 /* ── Transizioni GDS: comparsa leggera di viste/pannelli/pill che appaiono
    una tantum (fadeInUp/popIn) e "scatto" su un valore numerico live che
    cambia (value-bump) - stessi timing/curve del design system di
-   riferimento, portati qui per uniformare il vocabolario di animazione -
-   vedi conversazione ("uniforma lo stile grafico"). */
+   riferimento, portati qui per uniformare il vocabolario di animazione. */
 @keyframes fadeInUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .animate-fade-in-up{animation:fadeInUp .25s ease}
 @keyframes popIn{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -190,8 +177,7 @@ code{background:var(--surface2);border:1px solid var(--border);border-radius:5px
 
 /* Stats che riempiono tutta la larghezza disponibile, stessa idea della
    tabbar sopra: ogni card e' flex:1, tre card in parti uguali su tutta la
-   riga invece di un gruppetto compatto - vedi conversazione ("belle ampie,
-   ad espandersi del tutto la larghezza in 16:9"). Sotto i 480px impilate a
+   riga invece di un gruppetto compatto. Sotto i 480px impilate a
    piena larghezza (una per riga, troppo strette altrimenti in tre). */
 .stats{display:flex;gap:14px;margin:0 0 20px}
 .stat{flex:1;border:1px solid var(--border);background:var(--surface);border-radius:14px;padding:16px 22px;box-shadow:var(--shadow);text-align:center}
@@ -203,8 +189,7 @@ code{background:var(--surface2);border:1px solid var(--border);border-radius:5px
 }
 .bar{display:flex;align-items:center;gap:12px;margin:0 0 18px;flex-wrap:wrap}
 /* Spostato dentro la topbar, tra il titolo e i pulsanti (era un blocco a
-   piena larghezza sopra le stats) - vedi conversazione ("spostala tra
-   terminal controller e refresh"). flex:1 lo fa allargare per riempire lo
+   piena larghezza sopra le stats). flex:1 lo fa allargare per riempire lo
    spazio tra titolo e icone senza spingerle fuori dalla riga quando il
    testo e' corto/assente (display:none di default). */
 #banner{display:none;flex:1;min-width:160px;border:1px solid var(--red);background:color-mix(in srgb,var(--red) 12%,var(--surface));color:var(--red);padding:7px 13px;border-radius:11px;font-weight:600;font-size:.82rem;margin:0}
@@ -218,14 +203,14 @@ code{background:var(--surface2);border:1px solid var(--border);border-radius:5px
 .node-head .idx{font-size:.78rem;color:var(--muted);font-weight:600}
 /* Contenitore stile-badge intorno a "#N" + indirizzo esadecimale: prima
    erano due span nudi senza alcun confine visivo, sperduti accanto al pill
-   di stato - vedi conversazione ("mettici qualcosa intorno"). */
+   di stato. */
 .node-id{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface2);border-radius:7px;padding:3px 9px}
 .node-id .idx{color:var(--muted)}
 .node-id .addr{color:var(--text)}
 /* Dal pulsante "Salva" fino al pill di stato ("Connesso" ecc.): spostati
    tutti in blocco a destra, in battuta col margine destro della card,
    invece di seguire subito il campo nome - lo spazio cosi' liberato va al
-   campo nome, che si allarga per riempirlo - vedi conversazione. Selettore
+   campo nome, che si allarga per riempirlo. Selettore
    sul fratello immediatamente successivo a .name-input (il bottone Salva,
    unico punto in cui compare questa combinazione) invece di una nuova
    classe: nessuna modifica a ui.js necessaria. */
@@ -234,13 +219,12 @@ code{background:var(--surface2);border:1px solid var(--border);border-radius:5px
 /* align-items:flex-start (era center): col pannello Impostazioni aperto
    (box alto, contiene tutte le sue card) il gruppo #idx/indirizzo/pill si
    centrava rispetto a TUTTA quell'altezza, finendo a mezz'aria scollegato
-   dal pulsante Impostazioni invece di restargli affiancato in alto - vedi
-   conversazione ("devono restare al fianco di settings"). */
+   dal pulsante Impostazioni invece di restargli affiancato in alto. */
 .node-meta{display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap;margin:8px 0 4px}
 .addr{color:var(--muted);font-size:.8rem;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 /* Grid auto-fill (era stato provato flex+grow per riempire l'ultima riga
    incompleta, ma cosi' facendo le card di quella riga finivano PIU' LARGHE
-   delle altre - vedi conversazione: "dovevano essere tutte larghe uguali").
+   delle altre.
    Con la griglia ogni card ha sempre la STESSA larghezza in ogni riga
    (calcolata sul numero massimo che ci sta), un'ultima riga incompleta
    lascia semplicemente celle vuote invece di alterare la larghezza -
@@ -275,8 +259,7 @@ code{background:var(--surface2);border:1px solid var(--border);border-radius:5px
    oscurava (opacity) l'intero contenitore, dati/testo compresi - ma in
    modalita' normale/verde i dati (letture sensori, stato relè, log) restano
    perfettamente leggibili, solo i comandi non sono inviabili: disattiva/
-   sbiadisce solo i controlli veri e propri, non tutto il blocco - vedi
-   conversazione.
+   sbiadisce solo i controlli veri e propri, non tutto il blocco.
    <details>/<summary> esclusi apposta: aprire un pannello di configurazione
    per guardarlo non richiede la modalita' USB, solo salvare (il pulsante
    dentro il pannello) la richiede. */
@@ -284,8 +267,7 @@ code{background:var(--surface2);border:1px solid var(--border);border-radius:5px
 .usb-locked .switch{opacity:.5;pointer-events:none}
 /* Pulisci/Copia log: azioni locali sul testo gia' mostrato, non toccano il
    device - devono restare sempre utilizzabili anche in modalita' normale
-   (non richiedono affatto lo sblocco USB) - vedi conversazione ("in
-   modalita' verde non si puo' copiare il log"). */
+   (non richiedono affatto lo sblocco USB). */
 .usb-locked .btn-clearlog, .usb-locked .btn-copylog{opacity:1;pointer-events:auto}
 
 .name-input{font-size:1rem;font-weight:700;border:1px solid transparent;border-radius:8px;padding:5px 8px;width:160px;max-width:48vw;background:transparent;color:var(--text)}
@@ -301,7 +283,7 @@ select:focus,input:focus{outline:none;border-color:var(--accent-text)}
    il border:2px del thumb si somma FUORI dalla width dichiarata (box-sizing
    di default) - il diametro visivo reale era 22px, non i 18px usati nel
    calcolo. Con box-sizing:border-box il border rientra nella width e i due
-   valori tornano a coincidere - vedi conversazione. */
+   valori tornano a coincidere. */
 /* select,input{padding:6px 9px} (sopra) si applica anche al range: quel
    padding sfalsava l'area dipinta dal gradiente rispetto alla corsa reale
    del pallino di ~9px per lato, la causa del residuo visibile agli
@@ -318,7 +300,7 @@ select:focus,input:focus{outline:none;border-color:var(--accent-text)}
 .dev-card .grow{flex:1;min-width:160px}
 /* Variante colonna per le card sniffer: header (mac/nome/rssi + azioni) piu'
    le righe dei byte del payload sotto, impilate invece che una accanto
-   all'altra come farebbe il layout riga di .dev-card - vedi conversazione. */
+   all'altra come farebbe il layout riga di .dev-card. */
 .dev-card.sniff-card{flex-direction:column;align-items:stretch;gap:6px}
 .sniff-card-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .sniff-card-head .rssi{margin-left:auto;display:flex;align-items:center;gap:6px}
@@ -327,8 +309,7 @@ select:focus,input:focus{outline:none;border-color:var(--accent-text)}
 
 /* Card del sensore attualmente isolato ("Isola sensore"): bordo/ombra accent
    per farla risaltare subito nella griglia invece di doverla ritrovare a
-   occhio tra le altre - vedi conversazione ("migliora il pannello sniffing
-   a livello grafico"). */
+   occhio tra le altre. */
 .sniff-card-pinned{border-color:var(--accent-text);box-shadow:0 0 0 1px var(--accent-text),var(--shadow)}
 
 /* Barre di segnale RSSI, al posto (o accanto) del solo numero in dBm: colpo
@@ -349,8 +330,7 @@ select:focus,input:focus{outline:none;border-color:var(--accent-text)}
 .sig-bars.lvl-2 i:nth-child(-n+2){background:var(--yellow)}
 
 /* Riga toolbar sniffer: comandi (slot/avvia/pulisci/stato) + ricerca/filtri
-   su due righe compatte invece dei <p> impilati verticalmente di prima -
-   vedi conversazione. */
+   su due righe compatte invece dei <p> impilati verticalmente di prima. */
 .sniff-toolbar{display:flex;flex-direction:column;gap:10px;margin:10px 0 14px}
 .sniff-toolbar-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .sniff-search{flex:1;min-width:180px}
@@ -363,8 +343,7 @@ select:focus,input:focus{outline:none;border-color:var(--accent-text)}
 .sniff-status .dot{width:7px;height:7px}
 
 /* Filtri "Solo con nome"/"Solo senza nome" come chip cliccabili invece di
-   checkbox nude, coerenti con lo stile pillola gia' usato per tab/badge -
-   vedi conversazione. */
+   checkbox nude, coerenti con lo stile pillola gia' usato per tab/badge. */
 .chip-toggle{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.78rem;font-weight:600;font-family:inherit;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
 .chip-toggle:hover{border-color:var(--border2);color:var(--text)}
 .chip-toggle.active{background:color-mix(in srgb,var(--accent-text) 16%,var(--surface));border-color:var(--accent-text);color:var(--accent-text)}
@@ -378,15 +357,14 @@ select:focus,input:focus{outline:none;border-color:var(--accent-text)}
    (nuova versione disponibile = da installare, non da ignorare per giorni)
    - bordo che pulsa con un bagliore acceso + un dot lampeggiante (stesso
    dot-pulse gia' usato per gli altri indicatori di stato) invece di stare
-   li' fermo e passare inosservato - vedi conversazione. */
+   li' fermo e passare inosservato. */
 #update-popup{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--accent-text);border-radius:12px;padding:12px 16px;font-size:.88rem;font-weight:600;animation:update-popup-in .25s ease,update-popup-glow 1.7s ease-in-out .3s infinite}
 .update-popup-dot{position:relative;width:8px;height:8px;border-radius:50%;flex:none;background:var(--accent-text)}
 .update-popup-dot::after{content:'';position:absolute;inset:0;border-radius:50%;background:inherit;animation:dot-pulse 1.6s cubic-bezier(0,0,.2,1) infinite}
 @keyframes update-popup-in{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 @keyframes update-popup-glow{0%,100%{box-shadow:0 8px 28px rgba(0,0,0,.35),0 0 0 0 color-mix(in srgb,var(--accent-text) 60%,transparent)}50%{box-shadow:0 8px 28px rgba(0,0,0,.35),0 0 16px 3px color-mix(in srgb,var(--accent-text) 60%,transparent)}}
 /* Pressione del pulsante "Aggiorna" nel popup di update: si comprime subito
-   al click (icona/testo invariati, la pagina sta per ricaricarsi da sola) -
-   vedi conversazione ("un'animazione sul pulsante appena premuto"). */
+   al click (icona/testo invariati, la pagina sta per ricaricarsi da sola). */
 .update-btn-pressed{animation:update-btn-press .5s ease forwards}
 @keyframes update-btn-press{0%{transform:scale(1)}30%{transform:scale(.88)}100%{transform:scale(.94);opacity:.75}}
 .pill-pending{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;color:var(--yellow);background:color-mix(in srgb,var(--yellow) 14%,transparent);border:1px solid color-mix(in srgb,var(--yellow) 35%,var(--border));border-radius:999px;padding:2px 9px}
@@ -398,30 +376,28 @@ select:focus,input:focus{outline:none;border-color:var(--accent-text)}
 .field label{font-weight:600;font-size:.9em}
 /* Relè disabilitato (non presente fisicamente): sbiadito come un nodo
    offline ma classe separata - significati diversi (qui e' una scelta di
-   configurazione, non un problema di raggiungibilita') - vedi
-   conversazione ("rifai la pagina dispositivo"). */
+   configurazione, non un problema di raggiungibilita'). */
 .relay-disabled{opacity:.55}
 /* Pulsante toggle grande per relè: e' l'azione principale della card,
    deve essere il primo elemento che salta all'occhio invece di un piccolo
-   .btn sm in mezzo a una riga - vedi conversazione. */
+   .btn sm in mezzo a una riga. */
 .relay-toggle-btn{display:block;width:100%;margin-top:10px;padding:22px 12px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:inherit;font-size:1.1rem;font-weight:700;text-align:center;cursor:pointer;transition:background .15s,border-color .15s}
 .relay-toggle-btn:hover{border-color:var(--border2)}
 .relay-toggle-btn.on{background:var(--green);border-color:var(--green);color:#06140f}
 .relay-toggle-btn.disabled{cursor:default;background:var(--surface2);color:var(--muted);opacity:.6}
 /* Card relè in una riga sola invece che nella griglia a 2 colonne condivisa
    con nodi mesh/beacon: sono poche (tipico 4-8) e quadrate, stanno bene
-   affiancate tutte insieme - vedi conversazione. Numero relè ingrandito,
+   affiancate tutte insieme. Numero relè ingrandito,
    e' l'unica etichetta della card quindi puo' permettersi di essere grande.
    flex:1 (era flex:0 0 130px, larghezza fissa) le fa allargare per
    riempire tutta la riga invece di restare un gruppetto a sinistra con
-   spazio vuoto a destra - vedi conversazione ("occupino tutta la
-   larghezza"). flex-wrap resta per quando i relè sono troppi/lo schermo
+   spazio vuoto a destra. flex-wrap resta per quando i relè sono troppi/lo schermo
    troppo stretto per stare tutti su una riga anche allargati. */
 #relays{display:flex;flex-wrap:wrap;gap:14px}
 .relay-card{flex:1 1 130px;text-align:center}
 .relay-num{font-size:2.1rem;font-weight:800;color:var(--text);line-height:1}
 /* Toggle switch per "Abilitato" al posto del checkbox nudo con label a
-   fianco - vedi conversazione. Basato su un checkbox reale nascosto (resta
+   fianco. Basato su un checkbox reale nascosto (resta
    accessibile/nativo) con una pillola disegnata sopra via ::before. */
 .relay-switch-row{display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;margin-top:12px;font-size:.85rem;color:var(--muted)}
 .switch{position:relative;display:inline-block;width:38px;height:22px;flex:none}
@@ -436,14 +412,12 @@ select:focus,input:focus{outline:none;border-color:var(--accent-text)}
    nascosto dentro una label-pillola, colorata via :has(input:checked) invece
    di classi JS - lo stato visivo segue sempre e comunque lo stato reale
    della checkbox, niente da tenere sincronizzato a mano. Browser richiesti
-   gia' solo Chrome/Edge (Web Serial/Web Bluetooth), :has() e' supportato -
-   vedi conversazione ("migliora la grafica delle spunte lampada/sensore"). */
+   gia' solo Chrome/Edge (Web Serial/Web Bluetooth), :has() e' supportato. */
 .kind-picker{display:inline-flex;gap:6px;flex-wrap:wrap}
 /* Stessa geometria di .btn.sm (raggio 9px, padding, font-size) invece della
    forma a pillola di prima: doveva stare in fila con Rebind/Rimuovi/gli
    altri .btn della card, non spiccare come elemento di un'altra famiglia
-   grafica - vedi conversazione ("uguali agli altri pulsanti, sono una voce
-   fuori dal coro"). */
+   grafica. */
 .kind-toggle{position:relative;display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.78rem;font-weight:600;line-height:1;font-family:inherit;cursor:pointer;user-select:none;transition:background .18s ease,border-color .18s ease,color .18s ease,transform .12s ease}
 .kind-toggle input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
 .kind-toggle svg{flex:none;transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
@@ -464,8 +438,7 @@ select:focus,input:focus{outline:none;border-color:var(--accent-text)}
 .kind-picker:has(.sensor input:checked):not(:has(.lamp input:checked)) .sensor{cursor:not-allowed}
 /* Card slot beacon, stessa identita' visiva delle card nodo mesh (.node):
    bordo/sfondo/ombra condivisi, campi impilati verticalmente invece della
-   vecchia riga singola che diventava illeggibile stretta - vedi
-   conversazione ("fai delle card come nella mesh"). */
+   vecchia riga singola che diventava illeggibile stretta. */
 .slot-field{margin:8px 0}
 .slot-field label{display:block;font-size:.75rem;color:var(--muted);margin-bottom:3px}
 .slot-field input{width:100%}
@@ -476,8 +449,7 @@ select:focus,input:focus{outline:none;border-color:var(--accent-text)}
 /* Chip per ogni valore letto dal beacon (NOME=valore della regola di
    decodifica), invece della stringa grezza "temp=24.5;hum=60;rssi=-55".
    Dimensioni aumentate e sfondo accent-tinted: e' il dato che interessa a
-   colpo d'occhio, deve "pesare" di piu' della configurazione sotto -
-   vedi conversazione ("dai piu' risalto ai dati"). */
+   colpo d'occhio, deve "pesare" di piu' della configurazione sotto. */
 .reading-row{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
 .reading-chip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:color-mix(in srgb,var(--accent-text) 10%,var(--surface2));border:1px solid color-mix(in srgb,var(--accent-text) 30%,var(--border));border-radius:10px;padding:8px 14px;min-width:64px}
 .reading-key{font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
@@ -496,7 +468,7 @@ select:focus,input:focus{outline:none;border-color:var(--accent-text)}
    ridisegno successivo, solo quando la differenza viene rilevata) - il
    colore rosso fisso di .changed sopra resta com'era, questo e' solo il
    "flash" istantaneo che richiama l'attenzione sul cambiamento appena
-   avvenuto - vedi conversazione ("migliora il pannello sniffing"). */
+   avvenuto. */
 .byte.byte-flash{animation:byteFlash .6s ease}
 @keyframes byteFlash{0%{transform:scale(1.3);box-shadow:0 0 0 4px color-mix(in srgb,var(--red) 45%,transparent)}100%{transform:scale(1);box-shadow:0 0 0 0 transparent}}
 details{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:4px 14px;margin:12px 0}
@@ -510,14 +482,12 @@ details[open] summary::before{content:'\25BE '}
    dell'app, ma il summary e' stilizzato come un vero pulsante (ingranaggio
    + testo, stessa geometria di .btn.sm) invece del link con triangolo
    usato per "Log seriale"/"Sniffer BLE" - l'utente lo ha chiesto
-   esplicitamente come "pulsante settings" - vedi conversazione ("snellire
-   un po'"). */
+   esplicitamente come "pulsante settings". */
 /* flex:1 1 auto: senza, il <details> (elemento flessibile nella riga
    .node-meta) si restringeva sul proprio contenuto invece di allargarsi -
    le card DENTRO erano gia' tutte uguali tra loro (grid-template-columns:
    1fr, verificato), ma il contenitore che le racchiude restava stretto
-   indipendentemente - vedi conversazione ("deve essere largo quanto
-   calibrazione lux"). Da chiuso non cambia nulla in pratica: c'e' solo il
+   indipendentemente. Da chiuso non cambia nulla in pratica: c'e' solo il
    summary (dimensionato al suo contenuto, .node-settings non ha
    bordo/sfondo propri) quindi lo spazio in piu' assegnato resta invisibile
    e #idx/indirizzo/pill continuano a stare sulla stessa riga (margin-left:
@@ -525,8 +495,7 @@ details[open] summary::before{content:'\25BE '}
 .node-settings{flex:1 1 auto;margin:0;padding:0;border:none;background:transparent}
 /* flex-basis:100% da aperto: condividendo la riga con #idx/indirizzo/pill
    (margin-left:auto), il pannello non puo' MAI essere largo quanto le
-   card sotto (Elemento/Luminosita', che hanno l'intera riga per loro) -
-   vedi conversazione ("manca ancora"). Da aperto si prende quindi tutta
+   card sotto (Elemento/Luminosita', che hanno l'intera riga per loro). Da aperto si prende quindi tutta
    la riga per se' (flex-wrap manda #idx/pill a capo, appena sotto invece
    che di fianco), cosi' le sue card interne arrivano davvero alla stessa
    larghezza di quelle sotto. Da chiuso resta come prima (nessun flex-basis
@@ -538,8 +507,7 @@ details[open] summary::before{content:'\25BE '}
 .node-settings[open] summary{margin-bottom:10px;border-color:var(--accent-text);color:var(--accent-text)}
 /* .node-settings-body porta anche la classe .cards (ora grid, vedi sopra):
    qui pero' colonna singola invece dell'auto-fill a piu' colonne - ogni
-   card occupa una riga intera, espansa il piu' possibile - vedi
-   conversazione ("una per riga, cosi' sono espanse il massimo possibile"). */
+   card occupa una riga intera, espansa il piu' possibile. */
 .node-settings-body{padding:12px;border:1px solid var(--border);background:var(--surface2);border-radius:12px}
 .node-settings-body.cards{grid-template-columns:1fr;margin-top:0}
 .node-settings-body .card{background:var(--surface)}
@@ -547,7 +515,7 @@ details[open] summary::before{content:'\25BE '}
 .savebar{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 30%);padding:16px 0 6px;margin-top:18px}
 /* Slot sensori a sinistra, guida sempre visibile a destra (fianco a fianco):
    ha senso solo su schermo largo/PC, ma l'app richiede comunque USB (Web
-   Serial) quindi e' di fatto sempre il caso - vedi conversazione. Sotto una
+   Serial) quindi e' di fatto sempre il caso. Sotto una
    certa larghezza (schermo stretto/finestra ridotta) torna impilata invece
    di rompersi. */
 .sensor-setup-layout{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
@@ -563,11 +531,11 @@ details[open] summary::before{content:'\25BE '}
 /* Stesso principio applicato a tutta la PWA (non solo alla guida regole):
    la connessione USB e' obbligatoria quindi si usa sempre da PC, ha senso
    sfruttare lo schermo in orizzontale invece di impilare tutto in colonna
-   unica - vedi conversazione. */
+   unica. */
 
 /* Griglia riutilizzabile a 2 colonne per qualunque elenco di card (nodi
    mesh, slot beacon, dispositivi sniffer): sotto una certa larghezza torna
-   a colonna unica invece di stringere troppo le card - vedi conversazione. */
+   a colonna unica invece di stringere troppo le card. */
 #discovered-box, #nodes-box, .cards-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
 @media (max-width:760px){ #discovered-box, #nodes-box, .cards-grid{grid-template-columns:1fr} }
 #discovered-box .section-title, #nodes-box .section-title{grid-column:1/-1}
@@ -580,7 +548,7 @@ details[open] summary::before{content:'\25BE '}
 
 /* flex-grow:0 (era 1): con la pagina allargata, "cresci per riempire lo
    spazio" trasformava il riquadro (bordo+sfondo del <details>) in un box
-   enorme quasi vuoto - vedi conversazione. Resta della sua larghezza
+   enorme quasi vuoto. Resta della sua larghezza
    naturale, lo spazio avanzato nella riga resta semplicemente sfondo pagina
    invece che dentro un box bordato. */
 .setup-sniffer-col{margin:0 0 8px}
@@ -595,8 +563,7 @@ details[open] summary::before{content:'\25BE '}
 .qr-row{display:flex;align-items:center;gap:8px}
 .qr-scan-btn{flex:none}
 /* Overlay: sfondo che sfuma+sfoca dentro, box che entra con un piccolo
-   "pop" (scale+salita) invece di comparire di scatto - vedi conversazione
-   ("migliora grafica e animazioni del mini menu del qr code"). */
+   "pop" (scale+salita) invece di comparire di scatto. */
 .qr-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;animation:qr-modal-fade .2s ease;transition:opacity .22s ease,backdrop-filter .22s ease}
 .qr-modal.qr-modal-closing{opacity:0;backdrop-filter:blur(0)}
 .qr-modal-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;width:min(420px,100%);box-shadow:0 20px 50px rgba(0,0,0,.45);animation:qr-modal-pop .28s cubic-bezier(.34,1.56,.64,1)}
@@ -625,7 +592,7 @@ details[open] summary::before{content:'\25BE '}
 .qr-switch-btn:hover{transform:rotate(180deg);background:rgba(20,20,20,.8)}
 /* Mirino: oltre agli angoli, un "laser" che scorre su e giu' (classico
    feedback "sto scansionando attivamente") e i quattro angoli che
-   respirano piano con un bagliore - vedi conversazione. Puramente visivo,
+   respirano piano con un bagliore. Puramente visivo,
    non tocca in alcun modo il frame passato a jsQR (overlay sopra il video). */
 .qr-guide{position:absolute;inset:12%;pointer-events:none;overflow:hidden}
 .qr-guide-grid{position:absolute;inset:0;background-image:
@@ -646,8 +613,7 @@ details[open] summary::before{content:'\25BE '}
 
 /* "Radar": pallino + due anelli concentrici che si espandono e sfumano in
    loop, usato ovunque compaia "ricerca/sniffer in corso" (pulsante Cerca
-   nuovi dispositivi, box "Ricerca in corso...", pulsante/status sniffer BLE)
-   - vedi conversazione ("un simbolo con una bella animazione"). */
+   nuovi dispositivi, box "Ricerca in corso...", pulsante/status sniffer BLE). */
 .radar-ping{position:relative;display:inline-block;width:15px;height:15px;vertical-align:middle;margin-right:7px}
 .radar-dot{position:absolute;top:50%;left:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:currentColor;z-index:2}
 .radar-ring{position:absolute;top:50%;left:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;border:1.5px solid currentColor;opacity:0;animation:radar-ring 1.8s ease-out infinite}

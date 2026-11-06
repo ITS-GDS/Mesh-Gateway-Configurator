@@ -6,15 +6,14 @@ const gw = new GatewaySerial();
 // Coda comandi: non manda il prossimo CFG: prima che il precedente abbia
 // avuto risposta (OK/ERR/BUSY) o sia scaduto un timeout di 8s.
 const CMD_TIMEOUT_MS = 8000;
-// CFG:IMPORTEND fa da sola tutto il lavoro pesante dell'import (bt_mesh_reset
-// + riprovisioning + configure_self, che dopo un boot/reset recente può
-// dover ritentare fino a 5 volte con 3s di pausa - vedi mesh_handler.c) e
-// gira per intero sul thread UART del firmware: 8s non bastano mai in quel
-// caso, il client marcava "timeout" mentre il firmware stava ancora
-// lavorando e finiva davvero con successo qualche secondo dopo - causando
-// poi un retry inutile che collideva con la risposta originale in arrivo
-// in ritardo (OK seguito subito da un ERR "nessun import in corso" per lo
-// stesso comando). Vedi conversazione.
+// CFG:IMPORTEND fa da sola tutto il lavoro pesante dell'import (bt_mesh_reset +
+// riprovisioning + configure_self, che dopo un boot/reset recente può dover
+// ritentare fino a 5 volte con 3s di pausa - vedi mesh_handler.c) e gira per intero
+// sul thread UART del firmware: 8s non bastano mai in quel caso, il client marcava
+// "timeout" mentre il firmware stava ancora lavorando e finiva davvero con successo
+// qualche secondo dopo - causando poi un retry inutile che collideva con la
+// risposta originale in arrivo in ritardo (OK seguito subito da un ERR "nessun
+// import in corso" per lo stesso comando).
 const CMD_TIMEOUT_OVERRIDES = { IMPORTEND: 45000 };
 function timeoutForCmd(name) { return CMD_TIMEOUT_OVERRIDES[name] || CMD_TIMEOUT_MS; }
 let cmdQueue = [];
@@ -46,15 +45,13 @@ function pump() {
     timer: setTimeout(() => {
       ui.log(`(timeout: nessuna risposta per ${name})`, 'err');
       ui.onCmdResult('TIMEOUT', name);
-      // CFG:STATE/CFG:STATUS non passano da settleInFlight in caso di
-      // successo (le risolve l'evento 'state'/'status' dedicato, vedi sopra)
-      // ma qui in caso di timeout arrivano comunque da questa stessa coda -
-      // senza questo, un solo CFG:STATE/CFG:STATUS perso (es. gateway
-      // occupato durante un import) lasciava statePending/statusPending
-      // bloccato per sempre: sia il poll automatico ogni 2s sia il pulsante
-      // di refresh manuale restavano no-op finché non ci si disconnetteva e
-      // riconnetteva da capo. Vedi conversazione ("la rotella per il
-      // refresh non fa nulla" / "i dati non refreshano").
+      // CFG:STATE/CFG:STATUS non passano da settleInFlight in caso di successo (le
+      // risolve l'evento 'state'/'status' dedicato, vedi sopra) ma qui in caso di
+      // timeout arrivano comunque da questa stessa coda - senza questo, un solo
+      // CFG:STATE/CFG:STATUS perso (es. gateway occupato durante un import)
+      // lasciava statePending/statusPending bloccato per sempre: sia il poll
+      // automatico ogni 2s sia il pulsante di refresh manuale restavano no-op
+      // finché non ci si disconnetteva e riconnetteva da capo.
       if (name === 'STATE') statePending = false;
       if (name === 'STATUS') statusPending = false;
       if (resolve) resolve({ type: 'TIMEOUT', cmd: name, msg: '' });
@@ -86,10 +83,10 @@ function requestStatus() {
 }
 
 export function sendCmd(line) { enqueue(line); }
-// Come sendCmd, ma restituisce una Promise che si risolve con {type,cmd,msg}
-// quando arriva la risposta (OK/ERR/BUSY) o scade il timeout - usato
-// dall'import di rete per poter riprovare una singola riga CFG:IMPORTNODE/
-// IMPORTGROUP se va persa/corrotta sul ponte USB-UART (vedi conversazione).
+// Come sendCmd, ma restituisce una Promise che si risolve con {type,cmd,msg} quando
+// arriva la risposta (OK/ERR/BUSY) o scade il timeout - usato dall'import di rete
+// per poter riprovare una singola riga CFG:IMPORTNODE/ IMPORTGROUP se va
+// persa/corrotta sul ponte USB-UART.
 export function sendCmdAwait(line) {
   return new Promise((resolve) => enqueue(line, resolve));
 }
@@ -188,9 +185,9 @@ gw.addEventListener('result', (e) => {
 gw.addEventListener('push', (e) => ui.applyPush(e.detail));
 
 function flashPressed(btn) {
-  // Feedback immediato al click (anello che si dilata da sotto il punto
-  // premuto), a prescindere da quanto ci mette la vera connessione/
-  // disconnessione USB/BLE a rispondere - vedi conversazione.
+  // Feedback immediato al click (anello che si dilata da sotto il punto premuto), a
+  // prescindere da quanto ci mette la vera connessione/ disconnessione USB/BLE a
+  // rispondere.
   btn.classList.remove('pressed');
   void btn.offsetWidth;
   btn.classList.add('pressed');
@@ -334,12 +331,12 @@ document.querySelectorAll('.btn-copylog').forEach(btn => btn.addEventListener('c
     flash(ok);
   } catch { flash(false); }
 }));
-// Pulsante notte/giorno: l'icona mostrata e' quella su cui si sta per
-// cliccare (sole di notte = "passa al giorno", luna di giorno = "passa alla
-// notte"), non lo stato attuale - vedi conversazione. sun/moon.icon-appear e
-// .icon-disappear sono animazioni CSS distinte (vedi style.css); al termine
-// di ciascuna si passa a icon-idle (entrata/riposo) o si toglie ogni classe
-// (uscita, resta invisibile) cosi' l'animazione non si "ripete" da ferma.
+// Pulsante notte/giorno: l'icona mostrata e' quella su cui si sta per cliccare
+// (sole di notte = "passa al giorno", luna di giorno = "passa alla notte"), non lo
+// stato attuale. sun/moon.icon-appear e .icon-disappear sono animazioni CSS
+// distinte (vedi style.css); al termine di ciascuna si passa a icon-idle
+// (entrata/riposo) o si toglie ogni classe (uscita, resta invisibile) cosi'
+// l'animazione non si "ripete" da ferma.
 (() => {
   const btn  = document.getElementById('btn-theme');
   const sun  = btn.querySelector('.sun');

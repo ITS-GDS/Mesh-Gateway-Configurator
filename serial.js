@@ -4,7 +4,7 @@
 // USB/BLE non corrispondono 1:1 alle righe), e smista ogni riga negli eventi
 // 'line' / 'state' / 'status' / 'sniffer' / 'push' / 'result'. Nessuna
 // dipendenza esterna - EventTarget nativo del browser.
-//
+// 
 // mode: 'serial' (Web Serial/USB, connect()) oppure 'ble' (Web Bluetooth via
 // addon ESP32-S3 Zero, connectBle()) - stessa istanza, stessa coda di
 // parsing/eventi: il resto della PWA (app.js/ui.js) non deve sapere quale dei
@@ -205,13 +205,13 @@ export class GatewaySerial extends EventTarget {
   }
 
   _onLine(line) {
-    // Le righe di CORPO dei blocchi CFG:STATE/STATUS/SNIFF (decine ogni 2s,
-    // poll automatico) e i loro marcatori START/END NON vengono piu' mandate
-    // sull'evento 'line' (quindi non finiscono nel pannello "Log seriale"):
-    // sono gia' interpretate strutturalmente (eventi 'state'/'status'/
-    // 'sniffer') e il rumore rendeva impossibile vedere a occhio le righe che
-    // contano davvero (DBG;, CFG:OK/ERR, comandi mandati, push) durante un
-    // provisioning che richiede minuti - vedi conversazione.
+    // Le righe di CORPO dei blocchi CFG:STATE/STATUS/SNIFF (decine ogni 2s, poll
+    // automatico) e i loro marcatori START/END NON vengono piu' mandate sull'evento
+    // 'line' (quindi non finiscono nel pannello "Log seriale"): sono gia'
+    // interpretate strutturalmente (eventi 'state'/'status'/ 'sniffer') e il rumore
+    // rendeva impossibile vedere a occhio le righe che contano davvero (DBG;,
+    // CFG:OK/ERR, comandi mandati, push) durante un provisioning che richiede
+    // minuti.
     if (line === 'CFG:STATE_START') { this._stateAcc = { busy: false, oob: false, usbMode: false, nodes: [], groups: [], discovered: [], discActive: false, autocalib: { busy: false, result: -2, sensorAddr: null } }; this._armTimer(); return; }
     if (line === 'CFG:STATE_END') {
       this._clearBlockTimer();
@@ -304,12 +304,11 @@ export class GatewaySerial extends EventTarget {
       }
       case 'SENSOR_DATA': {
         const node = st.nodes.find(x => x.i === parseInt(fields.node, 10));
-        // pres/light/power_x10/energy_wh: -1 = proprietà non supportata da
-        // questo device (scoperta via Sensor Descriptor Get, vedi
-        // discover_sensor_caps in mesh_handler.c) o non ancora letta -
-        // normalizzati tutti a null cosi' la UI puo' nascondere la card
-        // invece di mostrare un placeholder vuoto per sempre (vedi
-        // conversazione: "nascondiamo le card da cui non arriva nulla").
+        // pres/light/power_x10/energy_wh: -1 = proprietà non supportata da questo
+        // device (scoperta via Sensor Descriptor Get, vedi discover_sensor_caps in
+        // mesh_handler.c) o non ancora letta - normalizzati tutti a null cosi' la
+        // UI puo' nascondere la card invece di mostrare un placeholder vuoto per
+        // sempre.
         const pres = parseInt(fields.pres, 10);
         const light = parseInt(fields.light, 10);
         const powerX10 = parseInt(fields.power_x10, 10);
@@ -421,10 +420,9 @@ export class GatewaySerial extends EventTarget {
       const m = line.match(/;last=([\s\S]*)$/);
       st.mqttLast = m ? m[1] : '';
     } else if (type === 'HUBNAME') {
-      // "name=" e' sempre l'ultimo campo (puo' contenere ';', stesso motivo
-      // di MQTTLAST sopra) - prima CFG:SETHUBNAME era solo scrittura, la PWA
-      // non lo rileggeva mai da CFG:STATUS (vedi conversazione: "vorrei che
-      // la pwa lo leggesse il nome settato").
+      // "name=" e' sempre l'ultimo campo (puo' contenere ';', stesso motivo di
+      // MQTTLAST sopra) - prima CFG:SETHUBNAME era solo scrittura, la PWA non lo
+      // rileggeva mai da CFG:STATUS.
       const m = line.match(/;name=([\s\S]*)$/);
       st.hubName = m ? m[1] : '';
     }

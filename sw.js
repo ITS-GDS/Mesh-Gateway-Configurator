@@ -16,15 +16,13 @@ const ASSETS = [
   'vendor/jsQR.min.js',
 ];
 
-// cache.addAll() userebbe fetch() di default, che PUO' essere soddisfatto
-// dalla cache HTTP del browser invece che dalla rete (stesso identico
-// problema gia' risolto per sw.js stesso con updateViaCache:'none' - qui
-// pero' riguarda gli ASSET precaricati, style.css/ui.js/ecc.): un nuovo SW
-// installava correttamente (byte diversi rilevati -> updatefound) ma
-// finiva comunque per mettere in cache uno style.css VECCHIO preso dalla
-// cache HTTP, quindi un aggiornamento CSS/JS poteva non vedersi affatto
-// anche dopo aver confermato il popup "Aggiorna" - vedi conversazione
-// ("identico a prima ed e' la v102 e ho refreshato tutto"). {cache:
+// cache.addAll() userebbe fetch() di default, che PUO' essere soddisfatto dalla
+// cache HTTP del browser invece che dalla rete (stesso identico problema gia'
+// risolto per sw.js stesso con updateViaCache:'none' - qui pero' riguarda gli ASSET
+// precaricati, style.css/ui.js/ecc.): un nuovo SW installava correttamente (byte
+// diversi rilevati -> updatefound) ma finiva comunque per mettere in cache uno
+// style.css VECCHIO preso dalla cache HTTP, quindi un aggiornamento CSS/JS poteva
+// non vedersi affatto anche dopo aver confermato il popup "Aggiorna". {cache:
 // 'reload'} forza ogni asset precaricato a passare sempre dalla rete.
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -40,11 +38,11 @@ self.addEventListener('install', (event) => {
   // si ritrova codice nuovo sotto i piedi senza preavviso a meta' sessione.
 });
 
-// Il popup "Aggiorna disponibile" (index.html) manda questo messaggio al
-// click dell'utente: solo allora il SW in attesa prende il controllo.
-// GET_VERSION invece risponde con CACHE_NAME (unica fonte di verita' della
-// versione, niente numero duplicato a mano in index.html) - usato dal
-// popup versione al long-press sul titolo, vedi conversazione.
+// Il popup "Aggiorna disponibile" (index.html) manda questo messaggio al click
+// dell'utente: solo allora il SW in attesa prende il controllo. GET_VERSION invece
+// risponde con CACHE_NAME (unica fonte di verita' della versione, niente numero
+// duplicato a mano in index.html) - usato dal popup versione al long-press sul
+// titolo.
 self.addEventListener('message', (event) => {
   if (event.data === 'SKIP_WAITING') self.skipWaiting();
   else if (event.data === 'GET_VERSION' && event.source) {
