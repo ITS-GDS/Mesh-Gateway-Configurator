@@ -426,6 +426,8 @@ select:focus,input:focus{outline:none;border-color:var(--accent-text)}
 .kind-toggle:has(input:focus-visible){outline:2px solid var(--accent-text);outline-offset:2px}
 .kind-toggle.lamp:has(input:checked){background:color-mix(in srgb,var(--yellow) 18%,var(--surface));border-color:var(--yellow);color:var(--yellow)}
 .kind-toggle.lamp:has(input:checked) svg{transform:scale(1.15) rotate(-10deg)}
+.kind-toggle.thermo:has(input:checked){background:color-mix(in srgb,var(--orange) 18%,var(--surface));border-color:var(--orange);color:var(--orange)}
+.kind-toggle:has(input:disabled){opacity:.6;cursor:default}
 .kind-toggle.sensor:has(input:checked){background:color-mix(in srgb,var(--green) 18%,var(--surface));border-color:var(--green);color:var(--green)}
 .kind-toggle.sensor:has(input:checked) svg{transform:scale(1.15)}
 /* Impedisce di svuotare entrambe le capacita' (kind=0 lato firmware non ha

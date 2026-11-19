@@ -1282,7 +1282,7 @@ function renderNodes() {
     // ricostruisce il DOM sotto al dito/mouse esattamente mentre il
     // browser sta processando il toggle - stessa protezione che aveva il
     // vecchio <select> unico, ora su entrambe le checkbox indipendenti.
-    if (act.id.startsWith('kindlamp_') || act.id.startsWith('kindsens_')) return;
+    if (act.id.startsWith('kindlamp_') || act.id.startsWith('kindsens_') || act.id.startsWith('kindthermo_')) return;
     // Slider luminosita' in trascinamento: un re-render qui sostituisce il
     // range sotto al dito/mouse e il pallino "scatta" indietro alla vecchia
     // posizione - stessa protezione degli altri controlli interattivi.
@@ -1383,7 +1383,7 @@ function renderNode(nd) {
     stCls = rebindResult[nd.i].ok ? 'ok' : 'err';
     stTxt = rebindResult[nd.i].ok ? 'Rebind completato' : 'Rebind fallito';
   }
-  // "kind" e' una bitmask (1=lampada, 2=sensore, 3=entrambi), non piu' una
+  // "kind" e' una bitmask (1=lampada, 2=sensore, 4=termostato; si combinano), non piu' una
   // scelta esclusiva: un device combo (es. dongle SR con 2 LED + PIR/LUX)
   // puo' avere entrambe le capacita' gestite insieme, ognuna con le sue
   // card e il suo traffico MQTT indipendente - vedi CFG:SETKIND lato
@@ -1402,13 +1402,17 @@ function renderNode(nd) {
   const pending = kindPending[nd.i];
   const pendingLive = pending && pending.until > Date.now() && pending.combined !== nd.kind;
   const hasLampKind = pendingLive ? (pending.combined & 1) !== 0 : (nd.kind & 1) !== 0;
-  const hasSensorKind = pendingLive ? (pending.combined & 2) !== 0 : (nd.kind & 2) !== 0;
+  const hasThermoKind = pendingLive ? (pending.combined & 4) !== 0 : (nd.kind & 4) !== 0;
+  // Termostato: la temperatura arriva dal suo Sensor Server, quindi il bit sensore resta sempre attivo.
+  const hasSensorKind = hasThermoKind || (pendingLive ? (pending.combined & 2) !== 0 : (nd.kind & 2) !== 0);
   if (pending && !pendingLive) delete kindPending[nd.i]; // confermato dal firmware o scaduto
   const bulbIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.5.4.8 1 .8 1.7v.1h6.4v-.1c0-.7.3-1.3.8-1.7A7 7 0 0 0 12 2Z"/></svg>`;
   const sensorIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h3l2-7 4 14 3-9 2 5h4"/></svg>`;
+  const thermoIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>`;
   const kindPicker = `<span class="kind-picker">
       <label class="kind-toggle lamp"><input type="checkbox" id="kindlamp_${nd.i}" data-act="setkind" data-node="${nd.i}" data-bit="1" ${hasLampKind ? 'checked' : ''}>${bulbIcon}Lampada</label>
-      <label class="kind-toggle sensor"><input type="checkbox" id="kindsens_${nd.i}" data-act="setkind" data-node="${nd.i}" data-bit="2" ${hasSensorKind ? 'checked' : ''}>${sensorIcon}Sensore</label>
+      <label class="kind-toggle sensor"><input type="checkbox" id="kindsens_${nd.i}" data-act="setkind" data-node="${nd.i}" data-bit="2" ${hasSensorKind ? 'checked' : ''} ${hasThermoKind ? 'disabled' : ''}>${sensorIcon}Sensore</label>
+      <label class="kind-toggle thermo"><input type="checkbox" id="kindthermo_${nd.i}" data-act="setkind" data-node="${nd.i}" data-bit="4" ${hasThermoKind ? 'checked' : ''}>${thermoIcon}Termostato</label>
     </span>`;
   const fbtn = `<button class="btn danger sm" data-act="forget" data-node="${nd.i}">Rimuovi</button>`;
   const grpBadge = hasLampKind
@@ -1730,7 +1734,7 @@ function wireNodeEvents(box) {
       api.sendCmd(`CFG:SETNAME;node=${el.dataset.node};name=${inp ? inp.value : ''}`);
     });
   });
-  // Le due checkbox Lampada/Sensore sono indipendenti ma condividono lo
+  // Le checkbox Lampada/Sensore/Termostato (bitmask 1|2|4) sono indipendenti ma condividono lo
   // stesso comando CFG:SETKIND (bitmask 1|2): al cambio di una delle due si
   // legge anche lo stato attuale dell'altra per comporre il valore
   // combinato da inviare - un device combo puo' avere entrambe spuntate.
@@ -1744,7 +1748,8 @@ function wireNodeEvents(box) {
       const node = el.dataset.node;
       const lampChecked = document.getElementById(`kindlamp_${node}`)?.checked;
       const sensChecked = document.getElementById(`kindsens_${node}`)?.checked;
-      const combined = (lampChecked ? 1 : 0) | (sensChecked ? 2 : 0);
+      const thermoChecked = document.getElementById(`kindthermo_${node}`)?.checked;
+      const combined = (lampChecked ? 1 : 0) | (sensChecked || thermoChecked ? 2 : 0) | (thermoChecked ? 4 : 0);
       if (combined === 0) {
         el.checked = true;
         return;
