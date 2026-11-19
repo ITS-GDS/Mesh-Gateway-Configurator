@@ -246,6 +246,12 @@ export class GatewaySerial extends EventTarget {
       this._onResult(line);
       return;
     }
+    if (line.startsWith('THERMO;')) {
+      const f = {};
+      line.split(';').slice(1).forEach(p => { const i = p.indexOf('='); if (i > 0) f[p.slice(0, i)] = p.slice(i + 1); });
+      this.dispatchEvent(new CustomEvent('thermo', { detail: f }));
+      return;
+    }
     if (line.startsWith('ONOFF;') || line.startsWith('LEVEL;') || line.startsWith('SENSOR;') || line === 'DUMPEND') {
       this._onPush(line);
       return;

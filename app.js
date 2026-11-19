@@ -163,6 +163,8 @@ gw.addEventListener('status', (e) => {
   ui.renderStatus(e.detail);
 });
 
+gw.addEventListener('thermo', (e) => ui.onThermo(e.detail));
+
 gw.addEventListener('sniffer', (e) => {
   settleInFlight('SNIFFERDATA');
   ui.renderSniffer(e.detail);

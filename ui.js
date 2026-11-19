@@ -1258,6 +1258,47 @@ function chooseProvisionGroup(devName) {
   });
 }
 
+// Stato dei termostati, dalle righe push "THERMO;addr=..." del gateway (chiave: indirizzo unicast del nodo).
+// comfort/target/eco in decimi di grado, absence/boost in minuti. flags: 1 riscalda, 2 eco, 4 antigelo, 8 boost, 16 bloccato.
+const thermoState = {};
+const thermoAsked = {}; // ultimo CFG:THERMOGET per nodo, per non chiederlo a ogni render
+export function onThermo(f) {
+  const n = k => parseInt(f[k], 10);
+  thermoState[parseInt(f.addr, 16)] = {
+    comfort: n('comfort'), target: n('target'), mode: n('mode'), eco: n('eco'),
+    absence: n('absence'), boost: n('boost'), flags: n('flags'), at: Date.now(),
+  };
+}
+const clampT = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const degT = v => (v / 10).toFixed(1).replace('.', ',');
+
+function thermoCard(nd) {
+  const t = thermoState[parseInt(nd.base, 16)];
+  if (!t) {
+    // Nessuno Status ancora ricevuto: lo si chiede (al massimo ogni 15 s).
+    if (!thermoAsked[nd.i] || Date.now() - thermoAsked[nd.i] > 15000) {
+      thermoAsked[nd.i] = Date.now();
+      api.sendCmd(`CFG:THERMOGET;node=${nd.i}`);
+    }
+    return `<div class="cards"><div class="card"><div class="elem-title">Termostato</div><div class="muted" style="margin-top:6px">In attesa dello stato dal termostato...</div></div></div>`;
+  }
+  const st = t.mode === 0 ? 'Spento' : (t.flags & 8) ? 'Boost' : (t.flags & 4) ? 'Antigelo' : (t.flags & 2) ? 'Eco' : (t.flags & 1) ? 'Riscalda' : 'In temperatura';
+  const btn = (label, field, val, active) =>
+    `<button class="btn ${active ? 'primary ' : ''}sm" data-act="thermo" data-node="${nd.i}" data-field="${field}" data-val="${val}">${label}</button>`;
+  const step = (field, label, value) => `<div style="display:flex;align-items:center;gap:8px;margin-top:8px"><span class="muted" style="min-width:5.5em">${label}</span>
+      <button class="btn sm" data-act="thermo" data-node="${nd.i}" data-field="${field}" data-val="-5" data-rel="1" aria-label="Diminuisci">−</button>
+      <b>${value}</b>
+      <button class="btn sm" data-act="thermo" data-node="${nd.i}" data-field="${field}" data-val="5" data-rel="1" aria-label="Aumenta">+</button></div>`;
+  return `<div class="cards"><div class="card">
+    <div class="elem-title">Termostato · ${st}</div>
+    <div class="pctlbl" style="margin-top:6px">${degT(t.target)} °C <span class="muted" style="font-size:.6em">obiettivo</span></div>
+    <div style="display:flex;gap:6px;margin-top:8px">${btn('Spento', 'mode', 0, t.mode === 0)}${btn('Auto', 'mode', 1, t.mode === 1)}${btn('Manuale', 'mode', 2, t.mode === 2)}</div>
+    ${step('comfort', 'Comfort', degT(t.comfort) + ' °C')}
+    ${step('eco', 'Eco (riduzione)', degT(t.eco) + ' °C')}
+    <div style="margin-top:8px">${btn(t.boost ? `Boost ${t.boost} min · annulla` : 'Boost 30 min', 'boost', t.boost ? 0 : 30, t.boost > 0)}</div>
+  </div></div>`;
+}
+
 function renderNodes() {
   const box = document.getElementById('nodes-box');
   if (!lastState.nodes.length) { box.innerHTML = "<div class='empty'>In attesa di dispositivi...</div>"; return; }
@@ -1706,6 +1747,7 @@ function renderNode(nd) {
     companion,
     calibCard,
   ].filter(Boolean).join('');
+  if (hasThermoKind && nd.cfg) body += thermoCard(nd);
   const isOpen = openSettingsNodes.has(nd.i) ? ' open' : '';
   const settingsPanel = `<details class="node-settings" id="settings_${nd.i}" data-node="${nd.i}"${isOpen}><summary>${gearIcon}Impostazioni</summary><div class="node-settings-body cards">${settingsCards}</div></details>`;
   // Pulsante Impostazioni in linea con #idx/indirizzo/pill di stato (stessa riga
@@ -1724,6 +1766,21 @@ function wireNodeEvents(box) {
       const ni = parseInt(el.dataset.node, 10);
       if (el.open) openSettingsNodes.add(ni);
       else openSettingsNodes.delete(ni);
+    });
+  });
+  box.querySelectorAll('[data-act="thermo"]').forEach(el => {
+    el.addEventListener('click', () => {
+      const node = el.dataset.node, field = el.dataset.field;
+      const nd = lastState.nodes.find(n => String(n.i) === node);
+      const t = nd && thermoState[parseInt(nd.base, 16)];
+      if (!t) return;
+      // +/-: passo relativo sul valore attuale, nei limiti del firmware (comfort 5-30 °C, eco 0-10 °C).
+      let v = parseInt(el.dataset.val, 10);
+      if (el.dataset.rel) v = clampT(t[field] + v, 0, field === 'comfort' ? 300 : 100);
+      if (field === 'comfort') v = clampT(v, 50, 300);
+      t[field] = v; // anteprima immediata, lo Status vero la conferma o la corregge
+      api.sendCmd(`CFG:THERMO;node=${node};${field}=${v}`);
+      renderNodes();
     });
   });
   box.querySelectorAll('[data-act="setname"]').forEach(el => {
